@@ -10,15 +10,119 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>
 /* =====================================================================
-   CONFIG — paste your Google Sheet ID here.
-   It's the long string in the sheet URL:
-   https://docs.google.com/spreadsheets/d/<THIS_PART>/edit
-   The sheet must be shared: "Anyone with the link → Viewer".
-   (You can also test any sheet by adding ?sheet=<ID> to the page URL.)
+   ✏️  YOUR CONTENT — edit everything in this block.
+   - Text: change anything between the quotes.
+   - Images: paste any image URL (or put the image next to index.html
+     and write its file name, e.g. "images/me.jpg").
+   - Add a project / case study / job: copy one { ... }, block, paste it
+     below the last one and edit. Delete a block to remove it.
+   - Order on the page = order in this list.
    ===================================================================== */
-window.PORTFOLIO_CONFIG = {
-  SHEET_ID: "1pfDiIJNUlpxmEcg46DVpgCjrkAPH0uLxhtOvn86HNt8",
-  TABS: { profile: "Profile", experience: "Experience", cases: "CaseStudies", projects: "Projects", socials: "Socials" }
+window.PORTFOLIO = {
+
+  profile: {
+    name: "Aradhita Tuli",
+    role: "Product & Growth",
+    eyebrow: "Portfolio / Product, Growth & Strategy",
+    headline: "Building products people love.",
+    headline_italic: "One experiment at a time.",
+    intro: "I work at the intersection of product, data and storytelling — turning messy problems into clear strategies and shipped outcomes. Below is a deep dive into my work, followed by case studies and personal projects.",
+    status: "Open to new opportunities",          // leave "" to hide
+    location: "India",
+    email: "aradhita.tuli@tetr.org",
+    avatar_url: "https://picsum.photos/seed/portrait/600/600",
+    resume_url: "https://example.com/resume.pdf", // leave "" to hide the Resume button
+    primary_cta_label: "View my work",   primary_cta_link: "#experience",
+    secondary_cta_label: "Get in touch", secondary_cta_link: "#contact",
+    contact_heading: "Let's build something",
+    contact_heading_italic: "worth talking about.",
+    contact_text: "Have a role, a project or just a good idea? My inbox is open."
+  },
+
+  /* ---------- 01 · Experience (newest first) ---------- */
+  experience: [
+    {
+      company: "Northwind Labs", role: "Product Manager", type: "Full-time", location: "Bengaluru",
+      start: "Jan 2025", end: "Present",
+      logo_url: "",                       // optional company logo
+      company_url: "https://example.com", // optional
+      summary: "Own the activation and retention roadmap for a B2B analytics product used by 400+ teams.",
+      highlights: [
+        "Led discovery with 30+ customers and reframed onboarding around a single 'first insight' moment",
+        "Shipped a guided setup flow, cutting time-to-value from 6 days to 1",
+        "Built an experimentation cadence of 2 A/B tests per sprint"
+      ],
+      metrics: [ { value: "3x", label: "activation rate" }, { value: "-62%", label: "time to value" }, { value: "18", label: "experiments shipped" } ],
+      skills: ["Product strategy", "SQL", "Figma", "Amplitude"]
+    },
+    {
+      company: "Brightside", role: "Growth Associate", type: "Full-time", location: "Mumbai",
+      start: "Jun 2023", end: "Dec 2024", logo_url: "", company_url: "",
+      summary: "Drove acquisition experiments for a consumer fintech app from 50k to 400k users.",
+      highlights: [
+        "Designed a referral programme that became the #2 acquisition channel",
+        "Rebuilt lifecycle emails with segmentation — open rates up 41%",
+        "Built the CAC/LTV model used in the Series A deck"
+      ],
+      metrics: [ { value: "8x", label: "user growth" }, { value: "41%", label: "higher open rate" } ],
+      skills: ["Growth", "Lifecycle", "Braze", "Excel modelling"]
+    },
+    {
+      company: "Studio Kaya", role: "Strategy Intern", type: "Internship", location: "Delhi",
+      start: "Jan 2023", end: "May 2023", logo_url: "", company_url: "",
+      summary: "Supported brand and go-to-market strategy for three D2C clients.",
+      highlights: [ "Ran a competitive teardown across 40 brands", "Wrote the positioning narrative adopted for a relaunch" ],
+      metrics: [ { value: "3", label: "client launches" } ],
+      skills: ["Research", "Positioning", "Storytelling"]
+    }
+  ],
+
+  /* ---------- 02 · Case studies ---------- */
+  cases: [
+    {
+      title: "Rethinking onboarding for time-to-value", client: "Northwind Labs", category: "Product", year: "2025",
+      banner_url: "https://picsum.photos/seed/case-onboarding/1600/1000",
+      summary: "How a single 'first insight' moment became the north star for onboarding.",
+      problem: "Only 1 in 5 new workspaces reached a meaningful dashboard within their first week.",
+      approach: "Mapped 30 customer journeys, found the aha moment, and rebuilt setup around reaching it fast.",
+      outcome: "Activation tripled and new-user support tickets halved.",
+      metrics: [ { value: "3x", label: "activation" }, { value: "-50%", label: "onboarding tickets" } ],
+      link: "https://example.com/case-study-1"   // page that opens on click
+    },
+    {
+      title: "A referral loop that actually loops", client: "Brightside", category: "Growth", year: "2024",
+      banner_url: "https://picsum.photos/seed/case-referral/1600/1000",
+      summary: "Designing incentives that made sharing feel natural, not transactional.",
+      problem: "Paid channels were getting more expensive every month with flattening returns.",
+      approach: "Tested five incentive models, then doubled down on a two-sided reward tied to first transaction.",
+      outcome: "Referrals became the #2 acquisition channel within one quarter.",
+      metrics: [ { value: "#2", label: "channel in 90 days" }, { value: "-35%", label: "blended CAC" } ],
+      link: "https://example.com/case-study-2"
+    }
+  ],
+
+  /* ---------- 03 · Personal projects (4 per row on large screens, 1 on phones) ---------- */
+  projects: [
+    { title: "Habit Garden", description: "A tiny web app that grows a plant every time you keep a streak.", tags: ["Web app"], year: "2025",
+      banner_url: "https://picsum.photos/seed/proj-habit/1200/750", link: "https://example.com/project-1" },
+    { title: "Chai Index", description: "Tracking the price of a cup of chai across 20 Indian cities.", tags: ["Data", "Viz"], year: "2025",
+      banner_url: "https://picsum.photos/seed/proj-chai/1200/750", link: "https://example.com/project-2" },
+    { title: "Pitch Deck Teardown", description: "Breaking down 50 seed-stage decks and what they got right.", tags: ["Research"], year: "2024",
+      banner_url: "https://picsum.photos/seed/proj-pitch/1200/750", link: "https://example.com/project-3" },
+    { title: "Campus Swap", description: "A marketplace concept for students to trade textbooks and gear.", tags: ["Product"], year: "2024",
+      banner_url: "https://picsum.photos/seed/proj-campus/1200/750", link: "https://example.com/project-4" },
+    { title: "Small Bets", description: "A fortnightly newsletter on experiments, growth and product craft.", tags: ["Writing"], year: "2024",
+      banner_url: "https://picsum.photos/seed/proj-small/1200/750", link: "https://example.com/project-5" },
+    { title: "Metro Mood Map", description: "Mapping how commuters feel across Delhi Metro lines.", tags: ["Data", "Design"], year: "2023",
+      banner_url: "https://picsum.photos/seed/proj-metro/1200/750", link: "https://example.com/project-6" }
+  ],
+
+  /* ---------- Contact links ---------- */
+  socials: [
+    { label: "LinkedIn", url: "https://linkedin.com/in/your-handle" },
+    { label: "GitHub",   url: "https://github.com/your-handle" },
+    { label: "Email",    url: "mailto:aradhita.tuli@tetr.org" }
+  ]
 };
 </script>
 <style>
@@ -203,15 +307,6 @@ footer{margin-top:clamp(70px,9vw,120px);padding:28px 0;border-top:1px solid var(
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}
 
 /* loading skeleton */
-.loader{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:var(--navy-900);transition:opacity .5s;animation:loaderFailsafe .01s linear 9s forwards}
-@keyframes loaderFailsafe{to{opacity:0;visibility:hidden;pointer-events:none}}
-.diag{position:fixed;left:16px;right:16px;bottom:16px;z-index:90;max-width:640px;margin:0 auto;background:#fff;color:var(--ink);border-radius:16px;padding:18px 20px;box-shadow:0 20px 60px -10px rgba(0,0,0,.45);font-size:14px;line-height:1.55}
-.diag b{display:block;font-size:15px;margin-bottom:6px;color:#b42318}
-.diag ol{margin:8px 0 0 18px}
-.diag code{font-family:var(--mono);font-size:12px;background:#eef0f7;padding:1px 5px;border-radius:4px;word-break:break-all}
-.diag button{position:absolute;top:10px;right:12px;font-size:20px;color:var(--muted)}
-.loader.hide{opacity:0;pointer-events:none}
-.loader i{width:40px;height:40px;border-radius:50%;border:2px solid rgba(201,210,255,.2);border-top-color:var(--lav);animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ---------- Responsive ---------- */
@@ -257,8 +352,7 @@ footer{margin-top:clamp(70px,9vw,120px);padding:28px 0;border-top:1px solid var(
 </style>
 </head>
 <body>
-<noscript><div style="position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#0b1433;color:#eef1ff;font:16px system-ui;padding:24px;text-align:center">This portfolio needs JavaScript to load its content from Google Sheets.<br>Open it in a normal browser tab or from its hosted URL.</div></noscript>
-<div class="loader" id="loader"><i></i></div>
+<noscript><div style="position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#0b1433;color:#eef1ff;font:16px system-ui;padding:24px;text-align:center">This portfolio needs JavaScript. Open it in a normal browser tab.</div></noscript>
 
 <nav class="nav" id="nav">
   <div class="wrap">
@@ -368,37 +462,19 @@ footer{margin-top:clamp(70px,9vw,120px);padding:28px 0;border-top:1px solid var(
       <p id="cText"></p>
       <div class="hero-cta"><a class="btn" id="mailBtn" href="#">Say hello <span class="arrow">↗</span></a></div>
       <div class="socials" id="socials"></div>
-      <footer><span id="foot1"></span><span>Content powered by Google Sheets</span></footer>
+      <footer><span id="foot1"></span><span>Designed &amp; built with care</span></footer>
     </div>
   </section>
 </main>
 
 <script>
 (() => {
-/* ---------------- Demo content (shown until your sheet is connected) ---------------- */
-const P = s => `https://picsum.photos/seed/${s}/1200/750`;
-const DEMO = {
-  profile: {name:"Your Name",role:"Product & Growth",eyebrow:"Portfolio / Product, Growth & Strategy",headline:"Building products people love.",headline_italic:"One experiment at a time.",intro:"Connect your Google Sheet to replace this demo content. Everything here — text, images and links — is read from the sheet.",status:"Open to new opportunities",email:"you@example.com",avatar_url:"https://picsum.photos/seed/portrait/600/600",resume_url:"#",primary_cta_label:"View my work",primary_cta_link:"#experience",secondary_cta_label:"Get in touch",secondary_cta_link:"#contact",contact_heading:"Let's build something",contact_heading_italic:"worth talking about.",contact_text:"Have a role, a project or just a good idea? My inbox is open."},
-  experience:[
-    {company:"Northwind Labs",role:"Product Manager",type:"Full-time",location:"Bengaluru",start:"Jan 2025",end:"Present",summary:"Own the activation and retention roadmap for a B2B analytics product used by 400+ teams.",highlights:"Led discovery with 30+ customers\nShipped a guided setup flow, cutting time-to-value from 6 days to 1\nBuilt an experimentation cadence of 2 tests per sprint",metrics:"3x | activation rate\n-62% | time to value\n18 | experiments",skills:"Product strategy, SQL, Figma, Amplitude"},
-    {company:"Brightside",role:"Growth Associate",type:"Full-time",location:"Mumbai",start:"Jun 2023",end:"Dec 2024",summary:"Drove acquisition experiments for a consumer fintech app from 50k to 400k users.",highlights:"Designed referral programme that became the #2 channel\nRebuilt lifecycle emails — open rates up 41%",metrics:"8x | user growth\n41% | open rate lift",skills:"Growth, Lifecycle, Braze"},
-    {company:"Studio Kaya",role:"Strategy Intern",type:"Internship",location:"Delhi",start:"Jan 2023",end:"May 2023",summary:"Supported brand and go-to-market strategy for three D2C clients.",highlights:"Competitive teardown across 40 brands\nWrote the positioning narrative for a relaunch",metrics:"3 | launches",skills:"Research, Positioning"}
-  ],
-  cases:[
-    {title:"Rethinking onboarding for time-to-value",client:"Northwind Labs",category:"Product",year:"2025",banner_url:P("case-onboarding"),summary:"How a single 'first insight' moment became the north star for onboarding.",problem:"Only 1 in 5 new workspaces reached a meaningful dashboard in week one.",approach:"Mapped 30 journeys, found the aha moment, rebuilt setup around it.",outcome:"Activation tripled; new-user tickets halved.",metrics:"3x | activation\n-50% | tickets",tags:"Research, UX",link:"#"},
-    {title:"A referral loop that actually loops",client:"Brightside",category:"Growth",year:"2024",banner_url:P("case-referral"),summary:"Designing incentives that made sharing feel natural.",problem:"Paid channels were getting pricier with flattening returns.",approach:"Tested five incentive models; doubled down on a two-sided reward.",outcome:"Referrals became the #2 channel in one quarter.",metrics:"#2 | channel\n-35% | CAC",tags:"Growth, Incentives",link:"#"}
-  ],
-  projects:["Habit Garden|A tiny web app that grows a plant every time you keep a streak.|Web app","Chai Index|Tracking the price of a cup of chai across 20 cities.|Data viz","Pitch Deck Teardown|Breaking down 50 seed-stage decks.|Research","Campus Swap|A marketplace concept for students to trade gear.|Product","Small Bets|A fortnightly letter on experiments and growth.|Writing","Metro Mood Map|Mapping how commuters feel across metro lines.|Data, Design"]
-    .map((s,i)=>{const [title,description,tags]=s.split("|");return {title,description,tags,year:String(2025-Math.floor(i/2)),banner_url:P("proj"+i),link:"#"}}),
-  socials:[{label:"LinkedIn",url:"#"},{label:"GitHub",url:"#"},{label:"Email",url:"mailto:you@example.com"}]
-};
-
 /* ---------------- Helpers ---------------- */
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const lines = s => String(s || "").split(/\r?\n|\s*;\s*/).map(x => x.trim()).filter(Boolean);
-const list = s => String(s || "").split(",").map(x => x.trim()).filter(Boolean);
-const metrics = s => lines(s).map(l => { const [v, ...r] = l.split("|"); return { v: v.trim(), l: r.join("|").trim() }; });
+const lines = s => Array.isArray(s) ? s.filter(Boolean) : String(s || "").split(/\r?\n|\s*;\s*/).map(x => x.trim()).filter(Boolean);
+const list = s => Array.isArray(s) ? s.filter(Boolean) : String(s || "").split(",").map(x => x.trim()).filter(Boolean);
+const metrics = s => Array.isArray(s) && typeof s[0] === "object" ? s.map(m => ({ v: m.value ?? "", l: m.label ?? "" })) : lines(s).map(l => { const [v, ...r] = l.split("|"); return { v: v.trim(), l: r.join("|").trim() }; });
 const initials = s => String(s || "").split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
 const isExternal = u => /^https?:|^mailto:/i.test(u || "");
 const tgt = u => isExternal(u) && !/^mailto:/i.test(u) ? ' target="_blank" rel="noopener"' : "";
@@ -418,79 +494,7 @@ function imgTag(url, alt, label) {
   return `<img src="${esc(u)}" alt="${esc(alt)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='${ph.replace(/'/g, "\\'").replace(/"/g, "&quot;")}'">`;
 }
 
-/* CSV parser (handles quotes, commas and line breaks inside cells) */
-function parseCSV(text) {
-  const rows = []; let row = [], cell = "", q = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (q) { if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
-    else if (c === '"') q = true;
-    else if (c === ",") { row.push(cell); cell = ""; }
-    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
-    else cell += c;
-  }
-  if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
-  return rows;
-}
-function toObjects(rows) {
-  const head = (rows.shift() || []).map(h => h.trim().toLowerCase().replace(/\s+/g, "_"));
-  return rows.filter(r => r.some(c => c.trim() !== "")).map(r => Object.fromEntries(head.map((h, i) => [h, (r[i] ?? "").trim()])));
-}
-const visible = arr => arr.filter(r => !/^(false|no|0|hide)$/i.test(r.show || "true"))
-  .map((r, i) => ({ ...r, _i: i }))
-  .sort((a, b) => (parseFloat(a.order) || 1e9) - (parseFloat(b.order) || 1e9) || a._i - b._i);
-
-async function fetchTab(id, name) {
-  const url = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(name)}`;
-  const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 8000);
-  let res;
-  try { res = await fetch(url, { signal: ctl.signal }); }
-  catch (e) { throw new Error(name + ": " + (e.name === "AbortError" ? "timed out" : "blocked — sheet not public, or not a native Google Sheet")); }
-  finally { clearTimeout(timer); }
-  if (!res.ok) throw new Error(name + ": HTTP " + res.status);
-  const text = await res.text();
-  if (/^\s*<(!doctype|html)/i.test(text)) throw new Error(name + ": sheet is not public");
-  return toObjects(parseCSV(text));
-}
-
-function showDiag(errors, id) {
-  const d = document.createElement("div"); d.className = "diag";
-  d.innerHTML = `<button aria-label="Close">×</button><b>Couldn't read your Google Sheet — showing demo content.</b>
-  <div>${errors.map(e => esc(e)).join("<br>")}</div>
-  <ol>
-    <li>It must be a <em>native Google Sheet</em>. If you uploaded the .xlsx, open it and choose <em>File → Save as Google Sheets</em>, then use the NEW file's ID.</li>
-    <li>Share → General access → <em>Anyone with the link</em> → Viewer.</li>
-    <li>Tab names must be exactly: Profile, Experience, CaseStudies, Projects, Socials.</li>
-    <li>Open the site from a real URL (Netlify / GitHub Pages / local server), not a preview pane. ID in use: <code>${esc(id)}</code></li>
-  </ol>`;
-  d.querySelector("button").onclick = () => d.remove();
-  document.body.appendChild(d);
-}
-
-const REQUIRED = { profile: "key", experience: "company", cases: "title", projects: "title", socials: "url" };
-
-async function load() {
-  const cfg = window.PORTFOLIO_CONFIG;
-  let id = (new URLSearchParams(location.search).get("sheet") || cfg.SHEET_ID || "").trim();
-  const m = id.match(/\/d\/([\w-]{20,})/); if (m) id = m[1];           // full URL pasted? extract the ID
-  if (!id || /PASTE_YOUR/.test(id)) { console.info("[portfolio] No SHEET_ID set — showing demo content."); return DEMO; }
-  const errors = [], out = {};
-  await Promise.all(Object.entries(cfg.TABS).map(async ([k, name]) => {
-    try {
-      const rows = await fetchTab(id, name);
-      if (rows.length && !(REQUIRED[k] in rows[0])) throw new Error(`${name}: tab not found or header row changed (needs a "${REQUIRED[k]}" column)`);
-      out[k] = rows;
-    } catch (e) { errors.push(e.message); out[k] = []; }
-  }));
-  const profile = {};
-  out.profile.forEach(r => { if (r.key) profile[r.key.trim().toLowerCase()] = r.value; });
-  const empty = !Object.keys(profile).length && !out.experience.length && !out.projects.length && !out.cases.length;
-  if (errors.length) console.warn("[portfolio]", errors);
-  if (empty) { showDiag(errors.length ? errors : ["The sheet loaded but every tab was empty."], id); return DEMO; }
-  if (errors.length) showDiag(errors, id);
-  // fill any missing piece from demo so nothing renders blank
-  return { profile: Object.keys(profile).length ? profile : DEMO.profile, experience: out.experience, cases: out.cases, projects: out.projects, socials: out.socials };
-}
+const visible = arr => (arr || []).filter(r => r && r.show !== false);
 
 /* ---------------- Date helpers for timeline viz ---------------- */
 const MONTHS = "jan feb mar apr may jun jul aug sep oct nov dec".split(" ");
@@ -631,9 +635,7 @@ burger.addEventListener("click", () => { const o = nav.classList.toggle("open");
 $("navLinks").addEventListener("click", e => { if (e.target.closest("a")) nav.classList.remove("open"); });
 
 document.documentElement.classList.add("js-anim");
-load().then(d => { try { render(d); } catch (e) { console.error("[portfolio] render failed", e); try { render(DEMO); } catch (_) {} } })
-  .catch(e => { console.error(e); render(DEMO); })
-  .finally(() => { $("loader").classList.add("hide"); document.querySelectorAll(".reveal").forEach(el => setTimeout(() => el.classList.add("in"), 1500)); });
+render(window.PORTFOLIO);
 })();
 </script>
 </body>
