@@ -22,6 +22,7 @@ window.PORTFOLIO = {
 
   profile: {
     name: "Siddhant Sharma",
+     logo_url: "images/logo.png",   // or any image URL
     role: "AI-led Strategy & Products",
     // eyebrow: "Portfolio / Product, Growth & Strategy",
     headline: "Building products people love.",
@@ -163,6 +164,7 @@ a:hover .arrow{transform:translate(2px,-2px)}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:78px}
 .brand{display:flex;align-items:center;gap:12px;font-size:24px;font-weight:500;letter-spacing:-.02em}
 .brand-mark{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,var(--lav-2),var(--violet));color:var(--navy-900);font-weight:600;font-size:15px}
+.brand-mark{overflow:hidden}.brand-mark img{width:100%;height:100%;object-fit:cover}
 .nav-links{display:flex;align-items:center;gap:36px;font-size:16px}
 .nav-links a:not(.btn){color:var(--muted-on-dark);transition:color .2s}
 .nav-links a:not(.btn):hover{color:#fff}
@@ -493,8 +495,8 @@ function render(d) {
   const name = p.name || "Your Name";
 
   document.title = `${name}${p.role ? " — " + p.role : ""}`;
-  $("brandName").textContent = name.split(" ")[0].toLowerCase();
-  $("brandMark").textContent = initials(name);
+  $("brandName").textContent = name;
+  if (p.logo_url) $("brandMark").innerHTML = `<img src="${esc(img(p.logo_url))}" alt="">`; else $("brandMark").textContent = initials(name);
   $("eyebrow").textContent = p.eyebrow || "Portfolio";
   $("headline").textContent = p.headline || "";
   $("headlineItalic").textContent = p.headline_italic || "";
