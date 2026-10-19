@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Influencer Pipeline</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Single-theme, monochrome. Dark ground, white text, grey rules. No accent colour. */
+:root{
+  --bg:#0E0E10; --surface:#161618; --border:#2A2A2E; --text:#FFFFFF; --muted:#A1A1AA; --faint:#3F3F46;
+  --code-bg:#09090B;
+  --sans:'Inter',system-ui,-apple-system,sans-serif; --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.6;margin:0}
+a{color:var(--text)}
+.wrap{max-width:900px;margin:0 auto;padding-block:0 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:14px;border-bottom:1px solid var(--border);font-size:13px}
+.topbar a{text-decoration:none;color:var(--muted)}
+.topbar a:hover{color:var(--text)}
+.topbar .tag{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.cta{display:inline-flex;align-items:center;gap:10px;margin:20px 0 4px;padding:12px 18px;border:1px solid var(--text);border-radius:999px;color:var(--text);text-decoration:none;font-weight:600;font-size:15px}
+.cta:hover{background:var(--text);color:var(--bg)}
+.cta svg{width:18px;height:18px;flex:none}
+.cta small{font-weight:400;color:inherit;opacity:.7}
+
+/* responsive pipeline flow */
+.pipe{display:grid;gap:18px;margin:16px 0}
+.stage{display:grid;gap:8px}
+.stage .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:stretch}
+.node{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;min-width:0;display:grid;gap:3px;position:relative}
+.node.key{border-color:var(--text)}
+.node .t{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.node .t.mono{font-family:var(--mono);font-weight:500;font-size:13px}
+.node .s{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.node .c{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px}
+.arrow{display:grid;place-items:center;color:var(--muted);font-size:18px;line-height:1;padding:4px 0}
+@media(min-width:720px){
+  .stage.h{grid-template-columns:auto 1fr;align-items:start}
+  .stage.h .lbl{padding-top:14px;width:88px}
+  .row.link{grid-template-columns:1fr auto 1fr auto 1fr auto 1fr}
+  .row.link .arrow{padding:0;align-self:center}
+}
+.ghost{visibility:hidden}
+@media(max-width:719px){.row.link .arrow{transform:rotate(90deg)}.ghost{display:none}}
+
+h1{font-size:clamp(30px,4.5vw,44px);line-height:1.1;letter-spacing:-.02em;margin:48px 0 16px;text-wrap:balance}
+h2{font-size:24px;letter-spacing:-.01em;margin:0 0 12px}
+h3{font-size:18px;margin:36px 0 8px}
+h4{font-size:15px;margin:22px 0 6px;color:var(--muted);font-weight:600}
+.lede{font-size:19px;color:var(--muted);max-width:60ch;margin:0 0 8px}
+p{margin:0 0 14px;max-width:66ch}
+.muted{color:var(--muted)}
+small,.small{font-size:13px;color:var(--muted)}
+code{font-family:var(--mono);font-size:.9em;background:var(--surface);border:1px solid var(--border);padding:1px 6px;border-radius:4px}
+strong{font-weight:600}
+
+.part{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:56px 0 6px;padding-top:28px;border-top:1px solid var(--border)}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:28px 0 8px}
+.stat{background:var(--surface);padding:18px 20px;display:grid;gap:4px}
+.stat .n{font-size:30px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .l{font-size:13px;color:var(--muted)}
+@media(max-width:640px){.stats{grid-template-columns:1fr}}
+
+
+table{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+td.num,th.num{text-align:right;white-space:nowrap}
+.tbl{overflow-x:auto;margin:12px 0}
+
+.bars{display:grid;gap:10px;margin:14px 0 6px}
+.bar{display:grid;grid-template-columns:160px 1fr 70px;gap:12px;align-items:center;font-size:14px}
+.bar .track{height:12px;background:var(--faint);border-radius:6px;overflow:hidden}
+.bar .fill{height:100%;background:var(--text);border-radius:6px}
+.bar .v{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:520px){.bar{grid-template-columns:110px 1fr 60px}}
+
+/* repo browser */
+.repo{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin:18px 0}
+.repo .rh{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--border)}
+.repo .rname{font-family:var(--mono);font-size:15px;font-weight:500;display:flex;align-items:center;gap:8px}
+.repo .rname svg{width:16px;height:16px}
+.repo .rmeta{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--text);border-radius:8px;color:var(--text);text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap}
+.btn:hover{background:var(--text);color:var(--bg)}
+.btn svg{width:14px;height:14px}
+.repo details{border-bottom:1px solid var(--border)}
+.repo details:last-child{border-bottom:0}
+.repo summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:20px minmax(140px,220px) 1fr auto auto;gap:12px;align-items:center;padding:11px 18px;font-size:14px}
+.repo summary::-webkit-details-marker{display:none}
+.repo summary:hover{background:var(--surface)}
+.repo summary .ic{color:var(--muted);display:grid;place-items:center}
+.repo summary .ic svg{width:16px;height:16px}
+.repo summary .f{font-family:var(--mono);font-size:13.5px}
+.repo summary .d{color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.repo summary .raw{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+.repo summary .raw:hover{color:var(--text)}
+.repo summary .w{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.repo details[open] summary{background:var(--surface);border-bottom:1px solid var(--border)}
+.repo .body{padding:16px 18px 18px 50px}
+.repo .body p{font-size:15px;margin-bottom:10px}
+.repo .body .io{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13.5px;margin:0 0 12px;color:var(--muted)}
+.repo .body .io b{color:var(--text);font-weight:600}
+.repo .body pre{margin:8px 0 0}
+@media(max-width:640px){
+  .repo summary{grid-template-columns:20px 1fr auto auto}
+  .repo summary .d{display:none}
+  .repo .body{padding-left:18px}
+}
+.setup{counter-reset:st;display:grid;gap:14px;margin:16px 0}
+.setup .st{display:grid;grid-template-columns:32px 1fr;gap:14px;align-items:start}
+.setup .st .k{width:28px;height:28px;border-radius:50%;border:1px solid var(--text);display:grid;place-items:center;font-family:var(--mono);font-size:12px}
+.setup .st h4{margin:3px 0 4px;color:var(--text);font-size:15px}
+.setup .st p{font-size:15px;margin-bottom:6px}
+.setup .st pre{margin:6px 0 0;font-size:12px;padding:10px 14px}
+
+/* script sections */
+.script{border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin:20px 0;min-width:0}
+.script .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.script .fn{font-family:var(--mono);font-size:16px;font-weight:500}
+.script .run{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.script .io{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;margin:10px 0 16px;color:var(--muted)}
+.script .io b{color:var(--text);font-weight:600}
+pre{margin:14px 0 10px;background:var(--code-bg);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6}
+pre .c{color:var(--muted)}
+.why{border-left:2px solid var(--faint);padding-left:14px;margin:0 0 6px}
+.why p{margin-bottom:8px;font-size:15px}
+
+ol,ul{margin:0 0 14px;padding-left:22px;max-width:66ch}li{margin-bottom:8px}
+.foot{margin-top:56px;padding-top:16px;border-top:1px solid var(--border);font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a href="../index.html">← Back to portfolio</a>
+    <span class="tag">project 07 · systems</span>
+  </div>
+
+  <h1>A consistent AI influencer for about $5</h1>
+  <p class="lede">Four small Python scripts that invent a character, teach an image model its face, and then produce Instagram posts and talking videos of it on demand. No subscriptions. The character is a file on disk that I own.</p>
+  <a class="cta" href="https://www.instagram.com/INSTAGRAM_HANDLE/" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+    See the character on Instagram <small>10 followers so far · every post and video came from this pipeline</small>
+  </a>
+
+  <div class="stats">
+    <div class="stat"><span class="n">$0.035</span><span class="l">per generated post</span></div>
+    <div class="stat"><span class="n">$0.115</span><span class="l">per second of talking video</span></div>
+    <div class="stat"><span class="n">~$5</span><span class="l">one-time setup, including training</span></div>
+  </div>
+
+  <!-- ================= PART 1 ================= -->
+  <p class="part">Part 1 of 2</p>
+  <h2>How it works</h2>
+
+  <h3>The problem this solves</h3>
+  <p>Any image model can generate a good-looking person. The hard part is generating the <strong>same</strong> person hundreds of times, in different places, clothes and lighting, so an audience believes it is one individual. Most tools try to do this by showing the model a reference photo with every request. That works for two or three images and then the face starts to change. In the one independent side-by-side test I found, Google's Nano Banana had lost the subject's likeness by the third image in a row.</p>
+  <p>The tools that do hold a face all use the same method underneath: they <strong>train a small add-on model on 20 to 30 photos of the character</strong>. The add-on is called a LoRA. Once it exists, every generation starts from the character's face instead of guessing it from a reference. Higgsfield sells this as "Soul ID" for $19 to $59 a month and keeps the trained model on their servers. On fal.ai the same training job costs about $2 and gives you a file you can download and keep.</p>
+
+  <h3>The pipeline</h3>
+  <p>Each step takes one plain text file in and produces one asset out. Costs are marked where they occur.</p>
+  <div class="pipe">
+    <div class="stage h">
+      <span class="lbl">Create · once</span>
+      <div class="row link">
+        <div class="node"><span class="t mono">character.txt</span><span class="s">one line describing the character</span></div>
+        <span class="arrow">→<br><span style="font-family:var(--mono);font-size:10px">$0.30</span></span>
+        <div class="node"><span class="t">12 faces</span><span class="s">generate, pick one</span></div>
+        <span class="arrow">→<br><span style="font-family:var(--mono);font-size:10px">$1.00</span></span>
+        <div class="node"><span class="t">24 training photos</span><span class="s">same face, varied</span></div>
+        <span class="arrow">→<br><span style="font-family:var(--mono);font-size:10px">$2.00</span></span>
+        <div class="node key"><span class="t">LoRA</span><span class="s">a trained file: this is the character</span><span class="c">mira_v1.safetensors</span></div>
+      </div>
+    </div>
+    <div class="stage h">
+      <span class="lbl">Produce · weekly</span>
+      <div class="row link">
+        <div class="node"><span class="t mono">scenes.txt</span><span class="s">one post per line: outfit, place, action, light</span></div>
+        <span class="arrow">→</span>
+        <div class="node key"><span class="t">Posts</span><span class="s">LoRA applied to every generation, 1024 × 1280</span><span class="c">$0.035 each</span></div>
+        <span class="arrow">→</span>
+        <div class="node"><span class="t">Product edit</span><span class="s">optional: product placed into a finished photo</span><span class="c">$0.10 each</span></div>
+        <span class="arrow ghost">→</span>
+        <div class="node ghost"></div>
+      </div>
+    </div>
+    <div class="stage h">
+      <span class="lbl">Animate · as needed</span>
+      <div class="row link">
+        <div class="node"><span class="t">One photo</span><span class="s">front-facing keeper from the posts</span></div>
+        <span class="arrow">+</span>
+        <div class="node"><span class="t mono">script.txt</span><span class="s">what they say, how they move</span></div>
+        <span class="arrow">→</span>
+        <div class="node key"><span class="t">Talking video</span><span class="s">the voice, lip-synced onto the photo</span><span class="c">$0.115 per second</span></div>
+        <span class="arrow ghost">→</span>
+        <div class="node ghost"></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Step by step, in plain words</h3>
+  <ol>
+    <li><strong>Describe the character.</strong> One line in <code>character.txt</code>: age, hair, skin, two small distinctive marks like freckles or a nose stud. The marks matter because they give the model something specific to lock on to.</li>
+    <li><strong>Generate 12 faces and pick one.</strong> The script makes 12 portraits from that line. I choose the one I'd follow. That photo becomes the base.</li>
+    <li><strong>Make 24 photos of that same face.</strong> An edit model takes the base photo and changes one thing at a time: angle, expression, outfit, lighting, full body, close-up. The face stays the same. I delete any where it didn't.</li>
+    <li><strong>Train the LoRA.</strong> The 20 to 30 approved photos are zipped and uploaded. About five minutes and $2 later a small file comes back. That file is the character. I back it up.</li>
+    <li><strong>Make posts.</strong> I write one line per post in <code>scenes.txt</code>: what they're wearing, where they are, what they're doing, the camera angle, the light. The script generates each one with the LoRA applied, so it's always the same person. About 3.5 cents a photo.</li>
+    <li><strong>Make a talking video.</strong> I write what the character says in <code>script.txt</code>. ElevenLabs reads it in the character's fixed voice. Kling's avatar model then animates one of the photos to match the audio. Video models can't use the LoRA directly, so the photo is what carries the face into video.</li>
+  </ol>
+
+  <h3>Why I wrote code instead of paying for a platform</h3>
+  <p>Platforms like Higgsfield do the same thing with a nicer interface. I rejected them for three reasons. The character lives on their server, so if they ban the account or shut down the character is gone. The credits expire monthly whether I use them or not. And the price jumps from $19 to $59 the moment I want more than a few posts a week. The script costs about $2 a month at 10 posts a week and about $7 at 50, and the character is a file I can move anywhere.</p>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Higgsfield (platform)</th><th>This pipeline (code)</th></tr></thead>
+    <tbody>
+      <tr><td>Monthly cost</td><td>$19 to $59, credits expire</td><td>$2 to $7, pay per use</td></tr>
+      <tr><td>Where the character lives</td><td>their server</td><td>a file on my disk</td></tr>
+      <tr><td>Quality of the face</td><td colspan="2">same underlying models</td></tr>
+      <tr><td>Time to set up</td><td>30 minutes</td><td>one evening</td></tr>
+      <tr><td>Time per week</td><td>30 to 45 minutes of clicking</td><td>10 minutes to write scenes and pick keepers</td></tr>
+    </tbody>
+  </table></div>
+  <p class="small">Also considered and rejected: Arcads (about $11 per video), Creatify ($3.30 per 30-second video in the app), Midjourney (reference-only, drifts), Gemini alone (can't train a LoRA).</p>
+
+  <h3>What one 20-second ad costs</h3>
+  <div class="bars">
+    <div class="bar"><span>Human UGC creator</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="v">$150+</span></div>
+    <div class="bar"><span>Arcads</span><div class="track"><div class="fill" style="width:7.3%"></div></div><span class="v">$11.00</span></div>
+    <div class="bar"><span>Creatify</span><div class="track"><div class="fill" style="width:2.2%"></div></div><span class="v">$3.30</span></div>
+    <div class="bar"><span>This pipeline</span><div class="track"><div class="fill" style="width:1.6%"></div></div><span class="v">$2.35</span></div>
+  </div>
+  <p class="small">Pipeline: 20 seconds × $0.115 for lip-sync, plus $0.035 for the source photo; the voice is on ElevenLabs' free tier. The human creator figure is a typical Indian micro-UGC rate, not a quote. Platform prices are October 2026 list rates and will change.</p>
+
+  <h3>What doesn't work yet</h3>
+  <ul>
+    <li>The LoRA drifts slowly after a few hundred images. The fix is monthly: add the best new photos to the training set and retrain for $2. The character gets sharper over time rather than blurrier.</li>
+    <li>Lip-sync needs a front-facing photo with the mouth closed and shoulders visible. Side profiles and laughing shots come out wrong.</li>
+    <li>Hands are still unreliable. Scenes are written so the hands are holding something or out of frame.</li>
+    <li>An undisclosed AI persona selling products is a problem under India's ASCI guidelines and Meta's AI-content labelling. The account says "AI creator" in the bio from the first post.</li>
+  </ul>
+
+  <!-- ================= PART 2 ================= -->
+  <p class="part">Part 2 of 2</p>
+  <h2>The code</h2>
+  <p>Twelve files, about 27 KB. Four scripts you run in order, one shared helper, three text files you edit, and the config. Click a file to see what it does.</p>
+
+  <div class="repo">
+    <div class="rh">
+      <span class="rname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>ai-influencer-kit <span class="rmeta">· Python 3.10+ · MIT</span></span>
+      <a class="btn" href="ai-influencer-kit.zip" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3h16v-3"/></svg> Download ZIP</a>
+    </div>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">README.md</span><span class="d">setup guide, the same steps as below</span><a class="raw" href="src/README.md.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w">6 KB</span></summary>
+      <div class="body"><p>Full setup and troubleshooting. The condensed version is in the section after this file list.</p></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">common.py</span><span class="d">keys, paths, cost logging</span><a class="raw" href="src/common.py.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w">2 KB</span></summary>
+      <div class="body"><p>Loads the API keys from <code>.env</code>, sets up the folders, and appends a line to <code>cost_log.csv</code> after every call so the real spend is always visible. Imported by the four scripts, never run on its own.</p></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">1_make_refs.py</span><span class="d">invent the character, build the training set</span><a class="raw" href="src/1_make_refs.py.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w">5 KB</span></summary>
+      <div class="body"><div class="io"><b>In</b><span><code>character.txt</code>, one line</span><b>Out</b><span>12 candidate faces, then 24 training photos of the chosen one</span><b>Cost</b><span>about $1.30, once</span></div>
+<p>First it generates 12 portraits from the description and you pick one. Then it takes that one photo and makes 24 variations of the same face (angles, outfits, lighting, full body, close-up) with an edit model, so the face never changes while everything around it does. Delete any that drifted. This folder is what the model learns from.</p>
+<pre>res = fal_client.subscribe("fal-ai/flux-pro/kontext", arguments={
+    "prompt": f"Same person, identical face. {change}. Realistic candid photo.",
+    "image_url": base_url,          <span class="c"># the one face you picked</span>
+})</pre></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">2_train.py</span><span class="d">train the LoRA from the training set</span><a class="raw" href="src/2_train.py.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w">2 KB</span></summary>
+      <div class="body"><div class="io"><b>In</b><span>20 to 30 photos in <code>training/</code></span><b>Out</b><span><code>lora/&lt;trigger&gt;.safetensors</code>, the character as a file</span><b>Cost</b><span>about $2, once, then monthly</span></div>
+<p>Zips the training photos, uploads them, and trains a LoRA: a small add-on to the image model that learns this one face and answers to a trigger word. Takes about five minutes. The file it downloads is the whole character. Rerun monthly with a few of the best new posts added to keep the face sharp.</p>
+<pre>res = fal_client.subscribe("fal-ai/flux-lora-fast-training", arguments={
+    "images_data_url": zip_url,
+    "trigger_word": TRIGGER,        <span class="c"># a made-up token, never a real name</span>
+    "steps": 1000,
+})</pre></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">3_post.py</span><span class="d">generate posts from scenes.txt</span><a class="raw" href="src/3_post.py.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w">4 KB</span></summary>
+      <div class="body"><div class="io"><b>In</b><span><code>scenes.txt</code>, one post per line</span><b>Out</b><span>photos in <code>out/</code>, two candidates per scene</span><b>Cost</b><span>$0.035 per photo</span></div>
+<p>Each line in <code>scenes.txt</code> describes a moment (outfit, place, action, angle, light), never the person, because the LoRA already knows them. The script puts the trigger word in front, attaches the LoRA, and generates at Instagram's 4:5 size. An optional flag hands a finished photo to Gemini to place a product in their hand without touching the face.</p>
+<pre>res = fal_client.subscribe("fal-ai/flux-lora", arguments={
+    "prompt": f"{TRIGGER}, {scene}, candid iPhone photo, natural light",
+    "loras": [{"path": LORA_URL, "scale": 0.9}],   <span class="c"># this keeps the face</span>
+    "image_size": {"width": 1024, "height": 1280},
+})</pre></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">4_video.py</span><span class="d">one talking video from one photo and script.txt</span><a class="raw" href="src/4_video.py.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w">4 KB</span></summary>
+      <div class="body"><div class="io"><b>In</b><span>one photo from <code>out/</code> and <code>script.txt</code></span><b>Out</b><span>one talking video next to the photo</span><b>Cost</b><span>$0.115 per second</span></div>
+<p>ElevenLabs reads <code>script.txt</code> in the fixed voice, then Kling's avatar model animates the photo to match the audio. Video models can't load a LoRA, so the photo is what carries the face into video. An optional <code>MOTION:</code> line at the top of the script directs how they move.</p>
+<pre>res = fal_client.subscribe("fal-ai/kling-video/ai-avatar/v2/pro", arguments={
+    "image_url": fal_client.upload_file(photo),   <span class="c"># the face</span>
+    "audio_url": fal_client.upload_file(audio),   <span class="c"># the voice</span>
+    "prompt": motion,
+})</pre></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">character.txt</span><span class="d">one-line description of the character</span><a class="raw" href="src/character.txt.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w"><1 KB</span></summary>
+      <div class="body"><p>Age, hair, skin, two distinctive marks. No outfits, or they get baked into the model and the character wears them forever.</p></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">scenes.txt</span><span class="d">one post per line</span><a class="raw" href="src/scenes.txt.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w"><1 KB</span></summary>
+      <div class="body"><p>Outfit, place, action, camera angle, light. Describe the moment, never the person.</p></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">script.txt</span><span class="d">what the character says in a video</span><a class="raw" href="src/script.txt.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w"><1 KB</span></summary>
+      <div class="body"><p>Optional <code>MOTION:</code> line for how they move, then the words they say.</p></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">.env.example</span><span class="d">template for your keys</span><a class="raw" href="src/.env.example.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w"><1 KB</span></summary>
+      <div class="body"><p>Copy to <code>.env</code> and fill in <code>FAL_KEY</code>, <code>ELEVENLABS_API_KEY</code>, <code>VOICE</code> and <code>TRIGGER_WORD</code>. Never commit <code>.env</code>.</p></div>
+    </details>
+    <details>
+      <summary><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/></svg></span><span class="f">requirements.txt</span><span class="d">four Python packages</span><a class="raw" href="src/requirements.txt.txt" target="_blank" rel="noopener" onclick="event.stopPropagation()">raw</a><span class="w"><1 KB</span></summary>
+      <div class="body"><p><code>fal-client</code>, <code>google-genai</code>, <code>python-dotenv</code>, <code>requests</code>.</p></div>
+    </details>
+  </div>
+
+  <h3>Setting it up</h3>
+  <p>About 20 minutes before the first run, then one evening to create the character. You need Python 3.10 or newer; check with <code>python3 --version</code>.</p>
+  <div class="setup">
+    <div class="st"><span class="k">1</span><div><h4>Get two keys</h4><p>fal.ai → sign up → Billing → add $10 → Keys → create one. elevenlabs.io → sign up (free) → profile → API Keys → create one. On ElevenLabs also open Voices → Library, add one voice to your library, and copy its voice ID.</p></div></div>
+    <div class="st"><span class="k">2</span><div><h4>Install</h4><pre>unzip ai-influencer-kit.zip && cd ai-influencer-kit
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env</pre></div></div>
+    <div class="st"><span class="k">3</span><div><h4>Fill in .env</h4><p>Open it in any editor. One value per line, no quotes.</p><pre>FAL_KEY=your_fal_key
+ELEVENLABS_API_KEY=your_elevenlabs_key
+VOICE=your_voice_id
+TRIGGER_WORD=mira_v1</pre></div></div>
+    <div class="st"><span class="k">4</span><div><h4>Create the character</h4><p>Edit the one line in <code>character.txt</code>, then:</p><pre>python 1_make_refs.py faces      <span class="c"># pick one face, copy it to refs/base.png</span>
+python 1_make_refs.py train      <span class="c"># delete any photo where the face drifted</span>
+python 2_train.py                <span class="c"># back up the file it saves in lora/</span></pre></div></div>
+    <div class="st"><span class="k">5</span><div><h4>Make content</h4><p>Edit <code>scenes.txt</code> and <code>script.txt</code>, then:</p><pre>python 3_post.py
+python 4_video.py out/&lt;batch&gt;/&lt;photo&gt;.jpg script.txt</pre><p>Keepers from <code>out/</code> go to Instagram. <code>cost_log.csv</code> shows what you've spent.</p></div></div>
+  </div>
+
+  <h3>Models and rates</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Job</th><th>Model (fal.ai unless noted)</th><th class="num">Rate</th></tr></thead>
+    <tbody>
+      <tr><td>Candidate faces</td><td>flux/dev</td><td class="num">$0.025 per image</td></tr>
+      <tr><td>Training photos</td><td>flux-pro/kontext</td><td class="num">$0.04 per image</td></tr>
+      <tr><td>Train the LoRA</td><td>flux-lora-fast-training</td><td class="num">about $2 per run</td></tr>
+      <tr><td>Posts</td><td>flux-lora</td><td class="num">$0.035 per image</td></tr>
+      <tr><td>Cheap drafts</td><td>flux/schnell</td><td class="num">$0.003 per image</td></tr>
+      <tr><td>Product edit</td><td>Gemini Nano Banana (Google)</td><td class="num">about $0.10 per image</td></tr>
+      <tr><td>Voice</td><td>ElevenLabs multilingual v2</td><td class="num">free tier</td></tr>
+      <tr><td>Lip-sync</td><td>kling-video/ai-avatar/v2/pro</td><td class="num">$0.115 per second</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="foot">Prices are fal.ai and ElevenLabs public rates, October 2026. The character is invented; no real person's likeness or voice is used.</div>
+</div>
+</body>
+</html>
