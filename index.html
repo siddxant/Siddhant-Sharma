@@ -550,7 +550,7 @@ function render(d) {
   else $("cases").innerHTML = cases.map(c => {
     const mt = metrics(c.metrics).slice(0, 3), href = c.link || "#";
     const pao = [["Problem", c.problem], ["Approach", c.approach], ["Outcome", c.outcome]].filter(x => x[1]);
-    return `<a class="case reveal" href="${esc(href)}"${tgt(href)}>
+    return `<a class="case reveal" href="${esc(href)}" target="_blank" rel="noopener">
       <div class="case-media">${imgTag(c.banner_url, c.title, c.title)}</div>
       <div class="case-body">
         <div class="case-kicker">${[c.category, c.client, c.year].filter(Boolean).map(x => `<span>${esc(x)}</span>`).join("")}</div>
@@ -569,7 +569,7 @@ function render(d) {
   if (!projs.length) $("projects").remove();
   else $("grid").innerHTML = projs.map(pj => {
     const href = pj.link || "#", tags = list(pj.tags);
-    return `<a class="proj reveal" href="${esc(href)}"${tgt(href)}>
+    return `<a class="proj reveal" href="${esc(href)}" target="_blank" rel="noopener">
       <div class="proj-img">${imgTag(pj.banner_url, pj.title, pj.title)}</div>
       <div class="proj-body">
         <div class="proj-top"><span>${esc(tags.slice(0, 2).join(" · "))}</span><span>${esc(pj.year || "")}</span></div>
