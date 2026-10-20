@@ -9,7 +9,7 @@
 <meta name="description" content="A working paper and companion Excel model on CAC, LTV, payback, contribution margin and how economies of scale show up in a P&L.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 <style>
 html,body{margin:0}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -55,9 +55,10 @@ p{margin:0}
 .eyebrow{font-family:var(--display);font-weight:600;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 
 /* masthead */
-.mast{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding-block:1.1rem;border-bottom:1px solid var(--rule);font-family:var(--display);font-size:.85rem;color:var(--ink-2)}
-.mast b{color:var(--ink);font-weight:600;letter-spacing:.04em}
-.mast .ref{font-family:var(--mono);font-size:.78rem}
+.mast{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding-block:1.4rem;border-bottom:1px solid var(--rule)}
+.mast .back{font-family:"IBM Plex Sans",var(--display);font-size:1rem;color:var(--ink-2);text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.mast .back:hover{color:var(--ink)}
+.mast .ref{font-family:var(--mono);font-size:.9rem;color:var(--ink-2);letter-spacing:.01em}
 
 /* hero */
 .hero{display:grid;grid-template-columns:minmax(0,1fr);gap:2rem;padding-block:3rem 2.5rem;border-bottom:1px solid var(--rule)}
@@ -228,8 +229,8 @@ details summary{cursor:pointer;color:var(--input)}
 
 
 /* dark mode: monochrome */
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero h1 .hl{background:none}}
-:root[data-theme="dark"] .hero h1 .hl{background:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero h1 .hl{background:none;padding-inline:0}}
+:root[data-theme="dark"] .hero h1 .hl{background:none;padding-inline:0}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bar.sub{background:transparent;border:1px solid var(--ink-2);height:8px}
 :root:not([data-theme="light"]) .sens td.b{color:var(--ink-3)}
 :root:not([data-theme="light"]) .chip.bad{color:var(--ink-3);border:1px solid var(--rule)}}
@@ -276,8 +277,9 @@ input[type=range]{height:28px;touch-action:pan-y}
 /* Phones */
 @media (max-width:640px){
   body{font-size:1rem;line-height:1.6}
-  .mast{padding-block:.8rem;font-size:.78rem}
-  .mast .ref{font-size:.7rem}
+  .mast{padding-block:1rem}
+  .mast .back{font-size:.92rem}
+  .mast .ref{font-size:.8rem}
   .hero{padding-block:1.75rem 1.75rem;gap:1.4rem}
   .hero h1{font-size:clamp(2rem,10.5vw,2.8rem)}
   .dek{font-size:1.06rem}
@@ -330,8 +332,7 @@ input[type=range]{height:28px;touch-action:pan-y}
 <body>
 <div class="wrap">
   <header class="mast">
-    <span><b>WORKING PAPER</b> &nbsp;·&nbsp; Finance &amp; analytics portfolio</span>
-    <span class="ref">Model: Unit_Economics_Model.xlsx · 9 tabs · 4,296 live formulas</span>
+    <a class="back" href="../index.html"><span aria-hidden="true">←</span> Back to portfolio</a>
   </header>
 
   <section class="hero" id="top" aria-labelledby="h1">
