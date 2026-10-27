@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alexandria</title>
+<meta name="description" content="Upload your documents, connect your own AI key, and ask questions with cited answers. Everything runs in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+/* Layout: fixed left rail (documents + settings), chat column, collapsible right panel (format guide / sources). Stacks on phones. */
+:root{
+  --bg:#F4F5F9; --surface:#FFFFFF; --surface-2:#F8F9FC; --border:#E3E6EE; --text:#111827; --muted:#6B7280;
+  --accent:#1D4ED8; --accent-soft:#E7EDFD; --accent-fg:#FFFFFF;
+  --good:#166534; --good-soft:#DCFCE7; --warn:#92400E; --warn-soft:#FEF3C7; --bad:#991B1B; --bad-soft:#FEE2E2;
+  --hl:#FDE68A; --user-bubble:#1D4ED8; --user-fg:#FFFFFF;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B0F1A; --surface:#121829; --surface-2:#0F1424; --border:#232B44; --text:#E5E9F5; --muted:#97A1BD;
+    --accent:#8FA8F5; --accent-soft:#1B2650; --accent-fg:#0B0F1A;
+    --good:#86EFAC; --good-soft:#12301E; --warn:#FCD34D; --warn-soft:#3A2A0A; --bad:#FCA5A5; --bad-soft:#3B1515;
+    --hl:#5B4A12; --user-bubble:#2F4FB8; --user-fg:#FFFFFF; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A; --surface:#121829; --surface-2:#0F1424; --border:#232B44; --text:#E5E9F5; --muted:#97A1BD;
+  --accent:#8FA8F5; --accent-soft:#1B2650; --accent-fg:#0B0F1A;
+  --good:#86EFAC; --good-soft:#12301E; --warn:#FCD34D; --warn-soft:#3A2A0A; --bad:#FCA5A5; --bad-soft:#3B1515;
+  --hl:#5B4A12; --user-bubble:#2F4FB8; --user-fg:#FFFFFF; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+code,.mono{font-family:var(--mono);font-size:.88em}
+.app{display:grid;grid-template-columns:300px minmax(0,1fr) 320px;height:100%;min-height:0}
+@media (max-width:1000px){.app{grid-template-columns:280px minmax(0,1fr)}.right{display:none}.right.open{display:flex;position:fixed;inset:0;z-index:20}}
+@media (max-width:700px){.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.left{max-height:45vh}}
+.left,.right{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:auto}
+.right{border-right:0;border-left:1px solid var(--border)}
+.brand{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border)}
+.brand h1{font-size:17px;font-weight:700;margin:0;letter-spacing:-.01em}
+.brand .sub{font-size:12px;color:var(--muted)}
+.sec{padding:14px 18px;border-bottom:1px solid var(--border);display:grid;gap:10px}
+.sec h2{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0;display:flex;justify-content:space-between;align-items:center}
+.drop{border:1.5px dashed var(--border);border-radius:12px;padding:16px;text-align:center;font-size:13px;color:var(--muted);cursor:pointer;background:var(--surface-2)}
+.drop.over{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.drop b{color:var(--text)}
+.doclist{display:grid;gap:6px}
+.doc{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--surface-2)}
+.doc .ic{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-size:10px;font-weight:700;font-family:var(--mono);background:var(--accent-soft);color:var(--accent)}
+.doc .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.doc .m{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.doc button{border:0;background:none;color:var(--muted);padding:4px;border-radius:6px}
+.doc button:hover{color:var(--bad);background:var(--bad-soft)}
+.doc.err .ic{background:var(--bad-soft);color:var(--bad)}
+.field{display:grid;gap:4px;font-size:13px}
+.field label{font-weight:500}
+.field input,.field select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);color:var(--text);font-size:13px}
+.field input:focus,.field select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.field .hint{font-size:11.5px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center}
+.btn{padding:8px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface);font-size:13px;font-weight:600}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn.small{padding:5px 9px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.acc{background:var(--accent-soft);color:var(--accent)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px}
+.stats div{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:7px 9px}
+.stats .k{color:var(--muted);font-size:11px}
+.stats .v{font-family:var(--mono);font-size:13px;font-weight:500}
+/* chat */
+.main{display:flex;flex-direction:column;min-height:0;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(18px,env(safe-area-inset-right,0px)) 12px max(18px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--border);background:var(--surface);font-size:13px}
+.topbar .status{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chat{flex:1;overflow:auto;padding:20px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.msg{max-width:760px;width:100%;margin:0 auto;display:grid;gap:8px}
+.msg.user{justify-items:end}
+.bubble{padding:12px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--border);max-width:100%;overflow-wrap:anywhere}
+.msg.user .bubble{background:var(--user-bubble);color:var(--user-fg);border-color:transparent;border-bottom-right-radius:4px}
+.msg.bot .bubble{border-bottom-left-radius:4px}
+.bubble p{margin:0 0 8px}.bubble p:last-child{margin:0}
+.bubble .cit{display:inline-block;font-family:var(--mono);font-size:11px;padding:0 5px;border-radius:5px;background:var(--accent-soft);color:var(--accent);cursor:pointer;vertical-align:1px}
+.srcs{display:flex;flex-wrap:wrap;gap:6px}
+.src{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--accent);cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meta{font-size:11.5px;color:var(--muted);font-family:var(--mono)}
+.welcome{max-width:760px;margin:30px auto;display:grid;gap:18px}
+.welcome h2{margin:0;font-size:24px;letter-spacing:-.01em;text-wrap:balance}
+.welcome p{margin:0;color:var(--muted);max-width:60ch}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:grid;gap:6px;font-size:13.5px}
+.step .n{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.step b{font-weight:600}
+.step.done{border-color:var(--good);background:var(--good-soft)}
+.composer{padding:10px max(18px,env(safe-area-inset-right,0px)) max(14px,env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));background:var(--surface);border-top:1px solid var(--border)}
+.composer form{max-width:760px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}
+.composer textarea{flex:1;min-width:0;resize:none;min-height:44px;max-height:160px;padding:11px 14px;border:1px solid var(--border);border-radius:14px;background:var(--surface-2);line-height:1.4}
+.composer .note{max-width:760px;margin:6px auto 0;font-size:11.5px;color:var(--muted);text-align:center}
+.typing{display:inline-flex;gap:4px}.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:b 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{opacity:.3}40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.typing i{animation:none}}
+/* right panel */
+.tabs{display:flex;border-bottom:1px solid var(--border)}
+.tabs button{flex:1;padding:12px;border:0;background:none;font-size:13px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent}
+.tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+.panel{padding:16px 18px;display:none;gap:14px;font-size:13.5px;overflow:auto}
+.panel.on{display:grid}
+.panel h3{margin:0;font-size:14px}
+.panel p{margin:0;color:var(--muted)}
+.fmt{display:grid;gap:8px}
+.fmt>div{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2)}
+.fmt .tag{font-family:var(--mono);font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.fmt .t{font-size:13px}.fmt .t b{font-weight:600}.fmt .t span{color:var(--muted);display:block;font-size:12px;margin-top:2px}
+.srcview{display:grid;gap:10px}
+.srcview .c{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--surface-2);font-size:13px;display:grid;gap:4px}
+.srcview .c .h{font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.srcview .c .h span{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400}
+.srcview .c .t{color:var(--muted);font-size:12.5px;white-space:pre-wrap;max-height:180px;overflow:auto}
+.srcview mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 2px}
+.toast{position:fixed;bottom:max(16px,env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:13px;z-index:50;max-width:90vw}
+.closebtn{display:none}
+@media (max-width:1000px){.closebtn{display:inline-block}}
+details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
+.progress{height:4px;border-radius:2px;background:var(--border);overflow:hidden}.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- LEFT: documents + settings -->
+<aside class="left">
+  <div class="brand"><div><h1>DocChat</h1><div class="sub">Your documents, your AI key, cited answers</div></div></div>
+
+  <div class="sec">
+    <h2>Documents <span id="doccount" class="pill acc">0</span></h2>
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Upload documents"><b>Drop files here</b> or click to choose<br><span class="mono">.pdf .docx .md .txt .csv</span></div>
+    <input type="file" id="file" multiple accept=".pdf,.docx,.md,.markdown,.txt,.csv,application/pdf" hidden>
+    <div class="progress" id="prog" hidden><i></i></div>
+    <div class="doclist" id="doclist"></div>
+    <div class="stats">
+      <div><div class="k">Chunks indexed</div><div class="v" id="s-chunks">0</div></div>
+      <div><div class="k">Embedded</div><div class="v" id="s-emb">0</div></div>
+    </div>
+    <div class="row">
+      <button class="btn small" id="embedall" title="Embed every chunk that isn't yet">Embed all</button>
+      <button class="btn small" id="exportidx">Export index</button>
+      <button class="btn small" id="clearall">Clear all</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>Answering model</h2>
+    <div class="field"><label for="provider">Provider</label>
+      <select id="provider">
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic (Claude)</option>
+        <option value="gemini">Google Gemini</option>
+        <option value="none">No model (quote the best passage)</option>
+      </select></div>
+    <div class="field" id="f-key"><label for="apikey">API key</label><input id="apikey" type="password" autocomplete="off" placeholder="sk-…"><div class="hint">Stored only in this browser (localStorage). Sent only to the provider you chose.</div></div>
+    <div class="field" id="f-model"><label for="model">Model</label><input id="model" placeholder="model name"><div class="hint" id="modelhint"></div></div>
+    <div class="row"><button class="btn small" id="testkey">Test connection</button><span id="keystatus" class="meta"></span></div>
+  </div>
+
+  <div class="sec">
+    <h2>Embeddings <span class="pill warn" id="embpill">off</span></h2>
+    <div class="field"><label for="embprov">Provider</label>
+      <select id="embprov">
+        <option value="none">None (keyword search only)</option>
+        <option value="openai">OpenAI text-embedding-3-small</option>
+        <option value="gemini">Gemini gemini-embedding-001</option>
+      </select>
+      <div class="hint">Embeddings let the search understand meaning ("standing desk" finds "ergonomic equipment"). Keyword-only works but can't refuse off-topic questions reliably.</div></div>
+    <div class="field" id="f-embkey"><label for="embkey">API key for embeddings</label><input id="embkey" type="password" autocomplete="off" placeholder="same as above if same provider"></div>
+    <details><summary>Advanced: retrieval settings</summary>
+      <div class="field" style="margin-top:8px"><label for="topk">Passages sent to the model: <span id="topk-v">5</span></label><input id="topk" type="range" min="2" max="10" value="5"></div>
+      <div class="field"><label for="gate">"I don't know" threshold: <span id="gate-v">auto</span></label><input id="gate" type="range" min="0" max="100" value="0"><div class="hint">0 = auto. Higher refuses more. Watch the confidence number under each answer to tune.</div></div>
+    </details>
+  </div>
+  <div class="sec" style="border-bottom:0;font-size:12px;color:var(--muted)">Nothing leaves your browser except API calls to the provider you pick. Documents and the index live in this browser's storage; export them to keep a copy.</div>
+</aside>
+
+<!-- CENTER: chat -->
+<main class="main">
+  <div class="topbar">
+    <div class="status" id="status"></div>
+    <div class="row"><button class="btn small" id="newchat">New chat</button><button class="btn small" id="openright">Guide</button></div>
+  </div>
+  <div class="chat" id="chat">
+    <div class="welcome" id="welcome">
+      <h2>Ask questions about your own documents, with the answer's source attached.</h2>
+      <p>Three things to do, in any order. Everything runs here in your browser; your files and keys never go to a server of ours.</p>
+      <div class="steps">
+        <div class="step" id="st1"><div class="n">1</div><b>Upload documents</b><span>PDF, Word, Markdown or text. Word and Markdown with headings give the best results; see the guide.</span></div>
+        <div class="step" id="st2"><div class="n">2</div><b>Add an API key</b><span>OpenAI, Anthropic or Gemini. The key stays in this browser. Or pick "No model" to see retrieval only.</span></div>
+        <div class="step" id="st3"><div class="n">3</div><b>Ask</b><span>Every answer cites the passage it came from. If your documents don't cover it, it says so instead of guessing.</span></div>
+      </div>
+      <p id="sampleline">Want to see it work first? <a href="#" id="loadsample">Load a sample handbook</a> (a fictional 14-page company policy set).</p>
+    </div>
+  </div>
+  <div class="composer">
+    <form id="askform">
+      <textarea id="q" rows="1" placeholder="Ask something about your documents…" aria-label="Question"></textarea>
+      <button class="btn primary" id="askbtn" type="submit">Ask</button>
+    </form>
+    <div class="note" id="note"></div>
+  </div>
+</main>
+
+<!-- RIGHT: guide / sources -->
+<aside class="right" id="right">
+  <div class="tabs"><button class="on" data-tab="guide">Format guide</button><button data-tab="sources">Sources</button><button data-tab="how">How it works</button><button class="closebtn" id="closeright" aria-label="Close">✕</button></div>
+  <div class="panel on" id="p-guide">
+    <h3>What to upload</h3>
+    <p>The bot answers from passages, so it works best when your documents already have clear sections. Here is what each format gives you.</p>
+    <div class="fmt">
+      <div><span class="tag" style="background:var(--good-soft);color:var(--good)">BEST</span><div class="t"><b>Markdown (.md) or Word (.docx) with real headings</b><span>Headings become section labels and citation targets. Use Word's Heading 1/2/3 styles, not bold text. One topic per file.</span></div></div>
+      <div><span class="tag" style="background:var(--good-soft);color:var(--good)">GOOD</span><div class="t"><b>Text-based PDF</b><span>Exported from Word, Google Docs or a wiki. Text is extracted per page; citations point to the page. Headings aren't recognised, so long pages are split by size.</span></div></div>
+      <div><span class="tag" style="background:var(--warn-soft);color:var(--warn)">OK</span><div class="t"><b>Plain text (.txt), CSV</b><span>Indexed as paragraphs / rows. Fine for FAQs and lists. Add a first line with a title.</span></div></div>
+      <div><span class="tag" style="background:var(--bad-soft);color:var(--bad)">NO</span><div class="t"><b>Scanned PDFs, images, slides with pictures of text</b><span>There is no text to extract. Run OCR first (Adobe, macOS Preview, or <code>ocrmypdf</code>) and upload the result. A PDF that indexes to 0 chunks is almost always a scan.</span></div></div>
+      <div><span class="tag" style="background:var(--bad-soft);color:var(--bad)">NO</span><div class="t"><b>Spreadsheets (.xlsx), Google Docs links</b><span>Export the sheet as CSV, and the Doc as .docx or Markdown, then upload.</span></div></div>
+    </div>
+    <h3>Tips that make answers better</h3>
+    <p>Put the document's title on the first line. Keep sections under about 300 words; split long ones with sub-headings. Spell out acronyms once. Remove anything you wouldn't want quoted back: the bot can repeat any passage it indexes. Files over ~20 MB will be slow in the browser; split them.</p>
+    <h3>Privacy</h3>
+    <p>Files are parsed and indexed in this browser tab and stored in its local storage. The only network calls are to the AI provider you configured, carrying your question and the matching passages. Clearing site data removes everything.</p>
+  </div>
+  <div class="panel" id="p-sources"><h3>Sources for the last answer</h3><div class="srcview" id="srcview"><p>Ask something and the passages used will appear here, with the matching words highlighted.</p></div></div>
+  <div class="panel" id="p-how">
+    <h3>What happens to a question</h3>
+    <p>1. Your documents were split into passages of about 300 words at their headings when you uploaded them.</p>
+    <p>2. The question is matched against every passage two ways: by keywords (BM25, like a classic search engine) and, if embeddings are on, by meaning (cosine similarity between vectors). The two rankings are merged.</p>
+    <p>3. If the best match is weak, you get "I couldn't find that" and no model is called. That threshold is the slider in Advanced settings.</p>
+    <p>4. Otherwise the top passages and your question go to the model with instructions to answer only from them and cite with [n]. The cited passages are shown under the answer.</p>
+    <h3>Costs</h3>
+    <p>Per question, roughly 2,000 tokens in and 250 out: about $0.0003 on Gemini Flash-Lite, $0.001 on GPT-5 mini, $0.003 on Claude Haiku 4.5. Embedding a 100-page document once costs under a cent with OpenAI.</p>
+    <h3>Follow-up questions</h3>
+    <p>The last two exchanges are sent along, so "and for contractors?" works. Start a new chat to reset.</p>
+  </div>
+</aside>
+</div>
+
+<script>
+(() => {
+'use strict';
+// ------------------------------------------------------------ utilities
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast = (m, ms=2600) => { const t=document.createElement('div'); t.className='toast'; t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(), ms); };
+const LS = { get:(k,d)=>{ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ------------------------------------------------------------ IndexedDB (documents + chunks persist per browser)
+const DB = (() => {
+  let db;
+  const open = () => new Promise((res, rej) => { const r = indexedDB.open('docchat', 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('docs', {keyPath:'id'}); };
+    r.onsuccess = () => { db = r.result; res(db); }; r.onerror = () => rej(r.error); });
+  const tx = (mode) => db.transaction('docs', mode).objectStore('docs');
+  return {
+    open,
+    all: () => new Promise((res, rej) => { const r = tx('readonly').getAll(); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }),
+    put: d => new Promise((res, rej) => { const r = tx('readwrite').put(d); r.onsuccess=res; r.onerror=()=>rej(r.error); }),
+    del: id => new Promise((res, rej) => { const r = tx('readwrite').delete(id); r.onsuccess=res; r.onerror=()=>rej(r.error); }),
+    clear: () => new Promise((res, rej) => { const r = tx('readwrite').clear(); r.onsuccess=res; r.onerror=()=>rej(r.error); }),
+  };
+})();
+
+// ------------------------------------------------------------ state
+let docs = [];            // [{id,name,kind,addedAt,chunks:[{id,doc,section,text,vec?}],error?}]
+let history = [];         // [{q,a}] last exchanges for follow-ups
+let lastHits = [];
+const settings = LS.get('docchat.settings', {provider:'openai', keys:{}, models:{}, embprov:'none', embkeys:{}, topk:5, gate:0});
+const DEFAULT_MODELS = {openai:'gpt-5-mini', anthropic:'claude-haiku-4-5', gemini:'gemini-2.5-flash-lite'};
+const MODEL_HINTS = {openai:'Cheap and good: gpt-5-mini. Also gpt-5-nano, gpt-4.1-mini.', anthropic:'claude-haiku-4-5 is the cheap one; claude-sonnet-4-5 for harder questions.', gemini:'gemini-2.5-flash-lite is the cheapest; gemini-2.5-flash is better at long passages.', none:''};
+
+// ------------------------------------------------------------ text processing
+const STOP = new Set("a an the and or of to in on for is are was were be do does did i my me we our you your can could should would will what when where how much many get have has it its this that with from as at by about into if there any who whom whose which why may might need want know think please tell help also just still".split(' '));
+const stem = w => w.length > 5 ? w.replace(/(ing|edly|ed|es|s|ly)$/, '') : w.replace(/(es|s)$/, '');
+const tokenize = s => (s.toLowerCase().match(/[a-z0-9][a-z0-9\-']*/g) || []).filter(w => !STOP.has(w) && w.length > 1).map(stem);
+
+function chunkSections(sections, docName, maxWords=300, overlap=40) {
+  // sections: [{section, text}] -> chunks with doc›section prefix; long sections split with overlap
+  const out = []; let carry = null;
+  sections.forEach(({section, text}) => {
+    let body = text.replace(/\s+\n/g, '\n').trim();
+    if (!body) return;
+    if (carry) { body = carry + '\n\n' + body; carry = null; }
+    const words = body.split(/\s+/);
+    if (words.length < 12) { carry = `${section}: ${body}`; return; }
+    const step = maxWords - overlap;
+    for (let i = 0; i < words.length; i += step) {
+      const piece = words.slice(i, i + maxWords).join(' ');
+      out.push({section, text: `${docName} › ${section}\n${piece}`});
+      if (words.length <= maxWords) break;
+    }
+  });
+  if (carry && out.length) out[out.length-1].text += '\n' + carry;
+  return out;
+}
+
+function sectionsFromMarkdown(md, fallbackTitle) {
+  const parts = md.replace(/\r/g,'').split(/\n(?=#{1,3} )/);
+  const secs = []; let title = fallbackTitle;
+  parts.forEach(p => {
+    const lines = p.split('\n'); const h = lines[0].match(/^(#{1,3})\s+(.*)/);
+    if (h) { const heading = h[2].trim(); const body = lines.slice(1).join('\n').trim();
+      if (h[1] === '#' && !secs.length && !body) { title = heading; return; }
+      secs.push({section: heading, text: body}); }
+    else if (p.trim()) { const t = p.trim();
+      if (!secs.length && t.length < 80 && !t.includes('\n')) { title = t; return; }  // a lone first line is the title
+      secs.push({section: secs.length ? 'Continued' : 'Introduction', text: t}); }
+  });
+  return {title, secs};
+}
+
+function sectionsFromPlain(txt, name) {
+  // paragraphs grouped into ~300-word sections labelled by their first line
+  const paras = txt.replace(/\r/g,'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+  const secs = []; let buf = [], n = 0;
+  const flush = () => { if (!buf.length) return; const label = buf[0].split('\n')[0].slice(0, 60); secs.push({section: label, text: buf.join('\n\n')}); buf = []; n = 0; };
+  paras.forEach(p => { const w = p.split(/\s+/).length; if (n + w > 300 && buf.length) flush(); buf.push(p); n += w; });
+  flush();
+  return {title: name, secs};
+}
+
+async function parsePdf(buf) {
+  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+  const secs = []; let title = null;
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p); const tc = await page.getTextContent();
+    let lastY = null, text = '';
+    tc.items.forEach(it => { if (!it.str) return; const y = it.transform[5];
+      if (lastY !== null && Math.abs(y - lastY) > 2) text += (Math.abs(y - lastY) > 14 ? '\n\n' : '\n'); else if (text && !text.endsWith(' ')) text += ' ';
+      text += it.str; lastY = y; });
+    text = text.replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+    if (!title && text) title = text.split('\n')[0].slice(0, 80);
+    if (text) { const ws = text.split(/\s+/); if (ws.length <= 320) secs.push({section:`Page ${p}`, text});
+      else { const sub = sectionsFromPlain(text, '').secs; sub.forEach((s, i) => secs.push({section:`Page ${p}${sub.length>1?' ('+(i+1)+')':''}`, text:s.text})); } }
+  }
+  return {title, secs, pages: pdf.numPages};
+}
+
+async function parseFile(file) {
+  const name = file.name.replace(/\.[^.]+$/, ''); const ext = (file.name.split('.').pop()||'').toLowerCase();
+  if (ext === 'pdf') { const r = await parsePdf(await file.arrayBuffer()); return {kind:'pdf', title: r.title || name, secs: r.secs, note: `${r.pages} pages`}; }
+  if (ext === 'docx') { const r = await mammoth.convertToMarkdown({arrayBuffer: await file.arrayBuffer()}); const m = sectionsFromMarkdown(r.value.replace(/\\([.\-*_#()\[\]!+])/g, '$1'), name); return {kind:'docx', title:m.title, secs:m.secs}; }
+  const txt = await file.text();
+  if (ext === 'md' || ext === 'markdown') { const m = sectionsFromMarkdown(txt, name); return {kind:'md', title:m.title, secs:m.secs}; }
+  if (ext === 'csv') { const rows = txt.replace(/\r/g,'').split('\n').filter(Boolean); const header = rows[0]; const secs = [];
+    for (let i = 1; i < rows.length; i += 20) secs.push({section:`Rows ${i}–${Math.min(i+19, rows.length-1)}`, text: header + '\n' + rows.slice(i, i+20).join('\n')});
+    return {kind:'csv', title:name, secs}; }
+  const m = sectionsFromPlain(txt, name); return {kind:'txt', title:m.title, secs:m.secs};
+}
+
+// ------------------------------------------------------------ index (BM25 over all chunks, rebuilt when docs change)
+let INDEX = {chunks:[], df:{}, avgdl:1};
+function rebuildIndex() {
+  const chunks = []; docs.forEach(d => (d.chunks||[]).forEach(c => chunks.push(c)));
+  const df = {}; let total = 0;
+  chunks.forEach(c => { const toks = tokenize(c.text); c.tf = {}; c.len = toks.length; total += toks.length; toks.forEach(t => c.tf[t] = (c.tf[t]||0)+1); Object.keys(c.tf).forEach(t => df[t] = (df[t]||0)+1); });
+  INDEX = {chunks, df, avgdl: total / Math.max(chunks.length, 1)};
+  $('s-chunks').textContent = chunks.length; $('s-emb').textContent = chunks.filter(c=>c.vec).length;
+  $('doccount').textContent = docs.length; renderStatus();
+}
+function bm25(terms) {
+  const N = INDEX.chunks.length, k1 = 1.4, b = 0.75;
+  return INDEX.chunks.map(c => { let s = 0; terms.forEach(t => { const f = c.tf[t]; if (!f) return; const n = INDEX.df[t]; const idf = Math.log(1 + (N - n + 0.5) / (n + 0.5)); s += idf * (f * (k1+1)) / (f + k1 * (1 - b + b * c.len / INDEX.avgdl)); }); return {c, s}; })
+    .filter(x => x.s > 0).sort((a, b2) => b2.s - a.s).slice(0, 20);
+}
+const cosine = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i]*b[i]; return s; }; // vectors are unit length
+
+async function search(q, k) {
+  const terms = tokenize(q);
+  const kw = bm25(terms); const lists = [kw.map(x => x.c)];
+  const bmap = new Map(kw.map(x => [x.c, x.s])); const cmap = new Map();
+  let embedded = false;
+  if (settings.embprov !== 'none' && INDEX.chunks.some(c => c.vec)) {
+    try { const [qv] = await embedTexts([q]); embedded = true;
+      const vs = INDEX.chunks.filter(c => c.vec).map(c => ({c, s: cosine(qv, c.vec)})).sort((a, b2) => b2.s - a.s).slice(0, 20);
+      vs.forEach(x => cmap.set(x.c, x.s)); lists.push(vs.map(x => x.c)); }
+    catch (e) { toast('Embedding the question failed: ' + e.message + '. Using keywords only.', 4000); }
+  }
+  const fused = new Map();
+  lists.forEach(l => l.forEach((c, r) => fused.set(c, (fused.get(c)||0) + 1/(60+r))));
+  const top = [...fused.entries()].sort((a, b2) => b2[1]-a[1]).slice(0, k).map(([c, s]) => ({c, rrf:s, bm25:bmap.get(c)||0, cos:cmap.get(c)||0}));
+  const conf = embedded ? Math.max(0, ...top.map(h => h.cos)) : Math.max(0, ...top.map(h => h.bm25));
+  const autoGate = embedded ? (settings.embprov === 'openai' ? 0.32 : 0.55) : 2.0;
+  const gate = settings.gate ? (embedded ? settings.gate/100 : settings.gate/5) : autoGate;
+  return {top, terms, conf, gate, embedded, pass: top.length > 0 && conf >= gate};
+}
+
+// ------------------------------------------------------------ providers
+function keyFor(p) { return (settings.keys[p]||'').trim(); }
+async function embedTexts(texts) {
+  const p = settings.embprov, key = (settings.embkeys[p] || settings.keys[p] || '').trim();
+  if (!key) throw new Error('no embeddings API key');
+  if (p === 'openai') {
+    const r = await fetch('https://api.openai.com/v1/embeddings', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key}, body: JSON.stringify({model:'text-embedding-3-small', input: texts})});
+    if (!r.ok) throw new Error((await r.json()).error?.message || r.statusText);
+    return (await r.json()).data.map(d => d.embedding);
+  }
+  if (p === 'gemini') {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents?key=${encodeURIComponent(key)}`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({requests: texts.map(t => ({model:'models/gemini-embedding-001', content:{parts:[{text:t}]}, outputDimensionality: 768}))})});
+    if (!r.ok) throw new Error((await r.json()).error?.message || r.statusText);
+    return (await r.json()).embeddings.map(e => { const v = e.values; const n = Math.hypot(...v) || 1; return v.map(x => x/n); });
+  }
+  throw new Error('embeddings off');
+}
+
+const SYSTEM = `You answer questions using ONLY the numbered excerpts provided in the user message.
+Rules:
+- Answer in plain words, then cite the excerpt(s) you used like [2]. Cite only excerpts you actually used.
+- Every number, date, threshold or name you state must appear in an excerpt. If it doesn't, do not state it.
+- If the excerpts do not answer the question, reply exactly: "I couldn't find that in the documents." and, if useful, say what the documents do cover nearby.
+- Keep answers under 150 words. No preamble.`;
+
+async function callModel(question, hits) {
+  const p = settings.provider, key = keyFor(p), model = (settings.models[p] || DEFAULT_MODELS[p]);
+  const excerpts = hits.map((h, i) => `[${i+1}] ${h.c.doc} › ${h.c.section}\n${h.c.text.split('\n').slice(1).join('\n')}`).join('\n\n');
+  const prior = history.slice(-2).map(h => `Previous Q: ${h.q}\nPrevious A: ${h.a}`).join('\n\n');
+  const user = (prior ? prior + '\n\n' : '') + `Excerpts:\n\n${excerpts}\n\nQuestion: ${question}`;
+  if (!key) throw new Error('Add an API key in the left panel, or choose "No model".');
+  if (p === 'openai') {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key}, body: JSON.stringify({model, messages:[{role:'system', content:SYSTEM},{role:'user', content:user}], max_completion_tokens: 400})});
+    const j = await r.json(); if (!r.ok) throw new Error(j.error?.message || r.statusText);
+    return {text: j.choices[0].message.content, usage: {in: j.usage?.prompt_tokens, out: j.usage?.completion_tokens}};
+  }
+  if (p === 'anthropic') {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {method:'POST', headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}, body: JSON.stringify({model, max_tokens: 400, system:[{type:'text', text:SYSTEM, cache_control:{type:'ephemeral'}}], messages:[{role:'user', content:user}]})});
+    const j = await r.json(); if (!r.ok) throw new Error(j.error?.message || r.statusText);
+    return {text: j.content.map(c => c.text||'').join(''), usage: {in: j.usage?.input_tokens, out: j.usage?.output_tokens}};
+  }
+  if (p === 'gemini') {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({system_instruction:{parts:[{text:SYSTEM}]}, contents:[{role:'user', parts:[{text:user}]}], generationConfig:{maxOutputTokens: 400}})});
+    const j = await r.json(); if (!r.ok) throw new Error(j.error?.message || r.statusText);
+    return {text: j.candidates?.[0]?.content?.parts?.map(x => x.text).join('') || '', usage: {in: j.usageMetadata?.promptTokenCount, out: j.usageMetadata?.candidatesTokenCount}};
+  }
+  throw new Error('unknown provider');
+}
+
+function extractive(hits, terms) {
+  const body = hits[0].c.text.split('\n').slice(1).join('\n').trim();
+  if (body.length <= 450) return body + ' [1]';
+  const sents = body.match(/[^.!?]+[.!?]+/g) || [body];
+  const scored = sents.map((s, i) => ({s: s.trim(), i, n: terms.filter(t => tokenize(s).includes(t)).length}));
+  const best = scored.filter(x => x.n > 0).sort((a, b2) => b2.n - a.n || a.i - b2.i).slice(0, 2).sort((a, b2) => a.i - b2.i);
+  return (best.length ? best : scored.slice(0, 1)).map(x => x.s).join(' ') + ' [1]';
+}
+
+// ------------------------------------------------------------ ask flow
+async function ask(question) {
+  question = question.trim(); if (!question) return;
+  if (!INDEX.chunks.length) { toast('Upload a document first.'); return; }
+  $('welcome').hidden = true;
+  addMsg('user', esc(question));
+  const pending = addMsg('bot', '<span class="typing"><i></i><i></i><i></i></span>');
+  $('askbtn').disabled = true;
+  try {
+    const t0 = performance.now();
+    const r = await search(question, settings.topk);
+    lastHits = r.top; renderSources(r.top, r.terms);
+    let text, usage = null, gated = false;
+    if (!r.pass) { gated = true; text = "I couldn't find that in the documents. Try rephrasing with the words the document would use, or check the Sources tab to see the closest passages."; }
+    else if (settings.provider === 'none') text = extractive(r.top, r.terms);
+    else { const out = await callModel(question, r.top); text = out.text; usage = out.usage; }
+    const cited = new Set([...text.matchAll(/\[(\d+)\]/g)].map(m => +m[1]));
+    const srcs = gated ? [] : r.top.filter((h, i) => cited.has(i+1));
+    if (!gated && !srcs.length && !/couldn't find/i.test(text)) srcs.push(r.top[0]);
+    const dt = ((performance.now() - t0) / 1000).toFixed(1);
+    const meta = `${gated ? 'refused' : 'answered'} · confidence ${r.conf.toFixed(2)} vs threshold ${r.gate.toFixed(2)} (${r.embedded ? 'cosine' : 'keywords'}) · ${dt}s` + (usage && usage.in ? ` · ${usage.in} in / ${usage.out} out tokens` : '');
+    pending.querySelector('.bubble').innerHTML = renderAnswer(text);
+    pending.insertAdjacentHTML('beforeend', `<div class="srcs">${srcs.map(h => `<span class="src" data-src="${r.top.indexOf(h)}">[${r.top.indexOf(h)+1}] ${esc(h.c.doc)} › ${esc(h.c.section)}</span>`).join('')}</div><div class="meta">${esc(meta)}</div>`);
+    if (!gated) { history.push({q: question, a: text}); }
+  } catch (e) {
+    pending.querySelector('.bubble').innerHTML = `<p><span class="pill bad">error</span> ${esc(e.message)}</p>`;
+  }
+  $('askbtn').disabled = false; $('chat').scrollTop = $('chat').scrollHeight;
+}
+function renderAnswer(text) {
+  return esc(text).split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g, '<br>').replace(/\[(\d+)\]/g, '<span class="cit" data-src="$1">[$1]</span>') + '</p>').join('');
+}
+function addMsg(role, html) {
+  const d = document.createElement('div'); d.className = 'msg ' + role; d.innerHTML = `<div class="bubble">${html}</div>`;
+  $('chat').appendChild(d); $('chat').scrollTop = $('chat').scrollHeight; return d;
+}
+function highlight(text, terms) {
+  let out = esc(text); const words = new Set((text.toLowerCase().match(/[a-z0-9][a-z0-9\-']*/g)||[]).filter(w => terms.includes(stem(w)) && w.length > 2));
+  words.forEach(w => { out = out.replace(new RegExp('\\b(' + w.replace(/[-]/g,'\\-') + ')\\b', 'gi'), '<mark>$1</mark>'); }); return out;
+}
+function renderSources(top, terms) {
+  $('srcview').innerHTML = top.length ? top.map((h, i) => `<div class="c" id="src-${i}"><div class="h"><div>[${i+1}] ${esc(h.c.doc)} › ${esc(h.c.section)}</div><span>${h.cos ? 'cos ' + h.cos.toFixed(2) + ' · ' : ''}bm25 ${h.bm25.toFixed(1)}</span></div><div class="t">${highlight(h.c.text.split('\n').slice(1).join('\n'), terms)}</div></div>`).join('') : '<p>No passage matched.</p>';
+}
+document.addEventListener('click', e => { const s = e.target.closest('[data-src]'); if (!s) return; const i = s.dataset.src - (s.classList.contains('cit') ? 1 : 0); openRight('sources'); const el = $('src-' + i); if (el) { el.scrollIntoView({block:'center'}); el.style.outline = '2px solid var(--accent)'; setTimeout(()=>el.style.outline='', 1200); } });
+
+// ------------------------------------------------------------ documents UI
+async function addFiles(files) {
+  const list = [...files]; if (!list.length) return;
+  $('prog').hidden = false; let done = 0;
+  for (const f of list) {
+    const id = 'd' + Date.now() + Math.random().toString(36).slice(2, 7);
+    const doc = {id, name: f.name, kind: (f.name.split('.').pop()||'').toLowerCase(), addedAt: Date.now(), chunks: [], size: f.size};
+    try {
+      const parsed = await parseFile(f);
+      doc.title = parsed.title || doc.name; doc.note = parsed.note || '';
+      doc.chunks = chunkSections(parsed.secs, doc.title).map((c, i) => ({id: id + ':' + i, doc: doc.title, section: c.section, text: c.text}));
+      if (!doc.chunks.length) doc.error = doc.kind === 'pdf' ? 'No text found. This is probably a scanned PDF; run OCR first.' : 'No text found in file.';
+    } catch (e) { doc.error = 'Could not read: ' + e.message; }
+    docs.push(doc); await DB.put(doc);
+    done++; $('prog').querySelector('i').style.width = (done / list.length * 100) + '%';
+    renderDocs(); rebuildIndex();
+  }
+  setTimeout(() => { $('prog').hidden = true; $('prog').querySelector('i').style.width = '0'; }, 400);
+  if (settings.embprov !== 'none') embedMissing();
+}
+async function embedMissing() {
+  const missing = INDEX.chunks.filter(c => !c.vec); if (!missing.length) return;
+  if (!(settings.embkeys[settings.embprov] || settings.keys[settings.embprov])) { toast('Add an embeddings API key to embed ' + missing.length + ' passages.'); return; }
+  $('embedall').disabled = true; let n = 0;
+  try {
+    for (let i = 0; i < missing.length; i += 50) {
+      const batch = missing.slice(i, i + 50); const vecs = await embedTexts(batch.map(c => c.text));
+      batch.forEach((c, j) => c.vec = vecs[j]); n += batch.length; $('s-emb').textContent = INDEX.chunks.filter(c=>c.vec).length;
+    }
+    for (const d of docs) await DB.put(d);
+    toast(`Embedded ${n} passages.`);
+  } catch (e) { toast('Embedding failed: ' + e.message, 5000); }
+  $('embedall').disabled = false; renderStatus();
+}
+function renderDocs() {
+  $('doclist').innerHTML = docs.map(d => `<div class="doc ${d.error ? 'err' : ''}" title="${esc(d.error || d.title)}"><div class="ic">${esc(d.kind.toUpperCase().slice(0,4))}</div><div><div class="n">${esc(d.title || d.name)}</div><div class="m">${d.error ? esc(d.error) : `${d.chunks.length} passages${d.note ? ' · ' + esc(d.note) : ''}`}</div></div><button data-del="${d.id}" aria-label="Remove">✕</button></div>`).join('') || '<div class="meta">No documents yet.</div>';
+  $('st1').classList.toggle('done', docs.some(d => d.chunks.length));
+}
+$('doclist').addEventListener('click', async e => { const b = e.target.closest('[data-del]'); if (!b) return; docs = docs.filter(d => d.id !== b.dataset.del); await DB.del(b.dataset.del); renderDocs(); rebuildIndex(); });
+$('clearall').addEventListener('click', async () => { if (!docs.length) return; docs = []; await DB.clear(); renderDocs(); rebuildIndex(); history = []; toast('Cleared.'); });
+$('embedall').addEventListener('click', embedMissing);
+$('exportidx').addEventListener('click', () => { const blob = new Blob([JSON.stringify({exported: new Date().toISOString(), docs}, null, 0)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'docchat-index.json'; a.click(); });
+const drop = $('drop'), fileIn = $('file');
+drop.addEventListener('click', () => fileIn.click()); drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileIn.click(); });
+fileIn.addEventListener('change', () => { addFiles(fileIn.files); fileIn.value = ''; });
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+document.addEventListener('dragover', e => e.preventDefault()); document.addEventListener('drop', e => { if (!drop.contains(e.target)) e.preventDefault(); });
+
+// ------------------------------------------------------------ settings UI
+function saveSettings() { LS.set('docchat.settings', settings); renderStatus(); }
+function loadSettingsUI() {
+  $('provider').value = settings.provider; $('apikey').value = settings.keys[settings.provider] || ''; $('model').value = settings.models[settings.provider] || DEFAULT_MODELS[settings.provider] || '';
+  $('modelhint').textContent = MODEL_HINTS[settings.provider]; $('f-key').hidden = $('f-model').hidden = settings.provider === 'none';
+  $('embprov').value = settings.embprov; $('embkey').value = settings.embkeys[settings.embprov] || ''; $('f-embkey').hidden = settings.embprov === 'none';
+  $('embpill').textContent = settings.embprov === 'none' ? 'off' : 'on'; $('embpill').className = 'pill ' + (settings.embprov === 'none' ? 'warn' : 'good');
+  $('topk').value = settings.topk; $('topk-v').textContent = settings.topk; $('gate').value = settings.gate; $('gate-v').textContent = settings.gate ? settings.gate : 'auto';
+  $('st2').classList.toggle('done', settings.provider === 'none' || !!keyFor(settings.provider));
+}
+$('provider').addEventListener('change', () => { settings.provider = $('provider').value; saveSettings(); loadSettingsUI(); });
+$('apikey').addEventListener('input', () => { settings.keys[settings.provider] = $('apikey').value; saveSettings(); $('st2').classList.toggle('done', !!keyFor(settings.provider)); });
+$('model').addEventListener('input', () => { settings.models[settings.provider] = $('model').value.trim(); saveSettings(); });
+$('embprov').addEventListener('change', () => { settings.embprov = $('embprov').value; saveSettings(); loadSettingsUI(); if (settings.embprov !== 'none') embedMissing(); });
+$('embkey').addEventListener('input', () => { settings.embkeys[settings.embprov] = $('embkey').value; saveSettings(); });
+$('topk').addEventListener('input', () => { settings.topk = +$('topk').value; $('topk-v').textContent = settings.topk; saveSettings(); });
+$('gate').addEventListener('input', () => { settings.gate = +$('gate').value; $('gate-v').textContent = settings.gate ? settings.gate : 'auto'; saveSettings(); });
+$('testkey').addEventListener('click', async () => {
+  $('keystatus').textContent = 'testing…';
+  try { if (settings.provider === 'none') { $('keystatus').textContent = 'no model selected'; return; }
+    const r = await callModel('Reply with the single word OK.', [{c:{doc:'Test', section:'Test', text:'Test › Test\nThis is a connectivity test. The answer is OK.'}}]);
+    $('keystatus').textContent = 'connected · ' + (settings.models[settings.provider] || DEFAULT_MODELS[settings.provider]) + ' replied'; $('st2').classList.add('done');
+  } catch (e) { $('keystatus').textContent = 'failed: ' + e.message; }
+});
+function renderStatus() {
+  const p = settings.provider; const emb = settings.embprov !== 'none'; const embedded = INDEX.chunks.filter(c=>c.vec).length;
+  $('status').innerHTML = `<span class="pill ${docs.length ? 'good' : 'warn'}">${docs.length} doc${docs.length===1?'':'s'} · ${INDEX.chunks.length} passages</span>` +
+    `<span class="pill ${p==='none' ? 'warn' : keyFor(p) ? 'good' : 'bad'}">${p==='none' ? 'no model: quoting passages' : (keyFor(p) ? (settings.models[p]||DEFAULT_MODELS[p]) : p + ': key missing')}</span>` +
+    `<span class="pill ${emb && embedded === INDEX.chunks.length && INDEX.chunks.length ? 'good' : emb ? 'warn' : 'acc'}">${emb ? `embeddings ${embedded}/${INDEX.chunks.length}` : 'keyword search'}</span>`;
+  $('note').textContent = p === 'none' ? 'No model selected: answers are the best-matching passage, quoted. Add a key for written answers.' : (emb ? '' : 'Keyword search only. Turn on embeddings for meaning-aware search and reliable "I don\'t know".');
+}
+
+// ------------------------------------------------------------ right panel + chat controls
+function openRight(tab) { $('right').classList.add('open'); document.querySelectorAll('.tabs button[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === tab)); document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + tab)); }
+document.querySelectorAll('.tabs button[data-tab]').forEach(b => b.addEventListener('click', () => openRight(b.dataset.tab)));
+$('openright').addEventListener('click', () => openRight('guide')); $('closeright').addEventListener('click', () => $('right').classList.remove('open'));
+$('newchat').addEventListener('click', () => { history = []; $('chat').querySelectorAll('.msg').forEach(m => m.remove()); $('welcome').hidden = false; toast('New chat. Documents kept.'); });
+$('askform').addEventListener('submit', e => { e.preventDefault(); const q = $('q').value; $('q').value = ''; $('q').style.height = 'auto'; ask(q); });
+$('q').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('askform').requestSubmit(); } });
+$('q').addEventListener('input', () => { $('q').style.height = 'auto'; $('q').style.height = Math.min($('q').scrollHeight, 160) + 'px'; });
+
+// ------------------------------------------------------------ sample handbook (fictional)
+const SAMPLE = `# Kestrel Labs Handbook (sample)
+
+## Annual leave
+Full-time employees receive 24 days of paid annual leave per calendar year, in addition to public holidays. Leave accrues at 2 days per month from your start date. Part-time staff accrue pro rata.
+
+## Carry-over
+Up to 5 unused days of annual leave can be carried into the next year and must be used by 31 March. Days beyond 5 are forfeited unless your manager approved a deferral in writing before 1 December.
+
+## Sick leave
+Sick leave is uncapped for the first 10 working days per year and does not require a medical certificate. From day 11 onward, a doctor's note is required and payments continue at full salary for up to 60 days.
+
+## Parental leave
+Primary caregivers receive 26 weeks of fully paid parental leave; secondary caregivers receive 8 weeks. Leave can be split into two blocks within the first 18 months. Notify People Ops at least 8 weeks before the expected start.
+
+## Expense approval thresholds
+Expenses under $200 are auto-approved on submission. Between $200 and $1,000 your manager must approve. Above $1,000 the head of finance approves and a quote must be attached before the purchase.
+
+## Submitting an expense claim
+Submit claims in Expensify within 30 days of the expense with an itemised receipt. Claims without receipts are capped at $25. Reimbursement lands in the payroll run on the 25th of each month.
+
+## Home office budget
+New joiners receive a one-off home office budget of $750 for a desk, chair, monitor and peripherals. Ergonomic equipment such as a standing desk or ergonomic chair counts toward this budget. A further $250 is available every 2 years for replacements.
+
+## Lost or damaged devices
+Report a lost or stolen laptop to IT within 24 hours so it can be remotely wiped. Accidental damage is covered; you will not be charged. Repeated losses may be reviewed with your manager.
+
+## Working from another country
+Kestrel Labs is remote-first. You can work from anywhere in your country of employment. Working from another country is allowed for up to 30 days per year with 2 weeks' notice to People Ops, for tax reasons.
+
+## Reporting a security incident
+If you suspect a breach, phishing or a leaked credential, post in #security-incidents or page the on-call engineer immediately. Do not try to fix it yourself first. Reporting within 1 hour is a target, not a blame tool.
+
+## Incident severity levels
+SEV1 means the product is down or data is at risk; SEV2 means a major feature is degraded; SEV3 is a minor bug with a workaround. SEV1 and SEV2 incidents page the on-call engineer and require an incident channel.
+
+## Learning budget
+Every employee has a $1,200 annual learning budget for courses, conferences and books. Conferences requiring travel need manager approval; the travel itself comes from the team budget, not the learning budget.
+
+## Referral bonus
+Employees who refer a hired candidate receive a $2,000 referral bonus, paid after the new hire completes probation. Referrals for roles in your own reporting line are still eligible.
+
+## Office closure
+Staff observe the public holidays of their country of employment. In addition, the company closes between 24 December and 1 January; these days do not count against annual leave.
+`;
+$('loadsample').addEventListener('click', e => { e.preventDefault(); addFiles([new File([SAMPLE], 'kestrel-labs-handbook.md', {type:'text/markdown'})]); toast('Sample handbook added. Try: "Can I expense a standing desk?"'); });
+
+// ------------------------------------------------------------ boot
+(async () => {
+  try { await DB.open(); docs = await DB.all(); } catch (e) { toast('Browser storage unavailable; documents will not persist.', 4000); }
+  loadSettingsUI(); renderDocs(); rebuildIndex();
+  if (docs.length) $('welcome').hidden = false;
+})();
+})();
+</script>
+</body>
+</html>
