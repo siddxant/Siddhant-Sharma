@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DocChat</title>
-<meta name="description" content="Upload your documents, connect your own AI key, and ask questions with cited answers. Everything runs in your browser.">
+<title>Alexandria</title>
+<meta name="theme-color" content="#000000">
+<meta name="description" content="Alexandria: upload your documents, connect your own AI key, and ask questions with cited answers. Everything runs in your browser.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -12,35 +13,25 @@
 <style>
 /* Layout: fixed left rail (documents + settings), chat column, collapsible right panel (format guide / sources). Stacks on phones. */
 :root{
-  --bg:#F4F5F9; --surface:#FFFFFF; --surface-2:#F8F9FC; --border:#E3E6EE; --text:#111827; --muted:#6B7280;
-  --accent:#1D4ED8; --accent-soft:#E7EDFD; --accent-fg:#FFFFFF;
-  --good:#166534; --good-soft:#DCFCE7; --warn:#92400E; --warn-soft:#FEF3C7; --bad:#991B1B; --bad-soft:#FEE2E2;
-  --hl:#FDE68A; --user-bubble:#1D4ED8; --user-fg:#FFFFFF;
+  --bg:#000000; --surface:#0A0A0A; --surface-2:#111111; --border:#262626; --text:#FFFFFF; --muted:#9A9A9A;
+  --accent:#FFFFFF; --accent-soft:#1C1C1C; --accent-fg:#000000;
+  --good:#FFFFFF; --good-soft:#1C1C1C; --warn:#CFCFCF; --warn-soft:#161616; --bad:#FFFFFF; --bad-soft:#2A2A2A;
+  --hl:#3A3A3A; --user-bubble:#FFFFFF; --user-fg:#000000;
   --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0B0F1A; --surface:#121829; --surface-2:#0F1424; --border:#232B44; --text:#E5E9F5; --muted:#97A1BD;
-    --accent:#8FA8F5; --accent-soft:#1B2650; --accent-fg:#0B0F1A;
-    --good:#86EFAC; --good-soft:#12301E; --warn:#FCD34D; --warn-soft:#3A2A0A; --bad:#FCA5A5; --bad-soft:#3B1515;
-    --hl:#5B4A12; --user-bubble:#2F4FB8; --user-fg:#FFFFFF; color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#0B0F1A; --surface:#121829; --surface-2:#0F1424; --border:#232B44; --text:#E5E9F5; --muted:#97A1BD;
-  --accent:#8FA8F5; --accent-soft:#1B2650; --accent-fg:#0B0F1A;
-  --good:#86EFAC; --good-soft:#12301E; --warn:#FCD34D; --warn-soft:#3A2A0A; --bad:#FCA5A5; --bad-soft:#3B1515;
-  --hl:#5B4A12; --user-bubble:#2F4FB8; --user-fg:#FFFFFF; color-scheme:dark;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:var(--accent)}
+a{color:var(--text);text-decoration-color:var(--muted)}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 code,.mono{font-family:var(--mono);font-size:.88em}
-.app{display:grid;grid-template-columns:300px minmax(0,1fr) 320px;height:100%;min-height:0}
+.nav{height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 max(18px,env(safe-area-inset-right,0px)) 0 max(18px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--border);background:var(--bg);font-size:13px}
+.nav a{text-decoration:none;color:var(--muted);font-weight:500}.nav a:hover{color:var(--text)}.nav .name{font-weight:700;letter-spacing:-.01em;color:var(--text)}.nav .name span{color:var(--muted);font-weight:400;margin-left:8px}
+.shell{display:grid;grid-template-rows:44px minmax(0,1fr);height:100%}
+.app{display:grid;grid-template-columns:300px minmax(0,1fr) 320px;min-height:0}
 @media (max-width:1000px){.app{grid-template-columns:280px minmax(0,1fr)}.right{display:none}.right.open{display:flex;position:fixed;inset:0;z-index:20}}
 @media (max-width:700px){.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.left{max-height:45vh}}
 .left,.right{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:auto}
@@ -55,7 +46,7 @@ code,.mono{font-family:var(--mono);font-size:.88em}
 .drop b{color:var(--text)}
 .doclist{display:grid;gap:6px}
 .doc{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--surface-2)}
-.doc .ic{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-size:10px;font-weight:700;font-family:var(--mono);background:var(--accent-soft);color:var(--accent)}
+.doc .ic{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-size:10px;font-weight:700;font-family:var(--mono);background:var(--text);color:var(--bg)}
 .doc .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .doc .m{font-size:11px;color:var(--muted);font-family:var(--mono)}
 .doc button{border:0;background:none;color:var(--muted);padding:4px;border-radius:6px}
@@ -68,14 +59,15 @@ code,.mono{font-family:var(--mono);font-size:.88em}
 .field .hint{font-size:11.5px;color:var(--muted)}
 .row{display:flex;gap:8px;align-items:center}
 .btn{padding:8px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface);font-size:13px;font-weight:600}
-.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn.primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn:hover{border-color:var(--text)}
 .btn.small{padding:5px 9px;font-size:12px}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px}
-.pill.good{background:var(--good-soft);color:var(--good)}
-.pill.warn{background:var(--warn-soft);color:var(--warn)}
-.pill.bad{background:var(--bad-soft);color:var(--bad)}
-.pill.acc{background:var(--accent-soft);color:var(--accent)}
+.pill.good{background:var(--text);color:var(--bg);border:1px solid var(--text)}
+.pill.warn{background:transparent;color:var(--warn);border:1px solid var(--border)}
+.pill.bad{background:transparent;color:var(--text);border:1px dashed var(--text)}
+.pill.acc{background:var(--accent-soft);color:var(--text);border:1px solid var(--border)}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px}
 .stats div{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:7px 9px}
 .stats .k{color:var(--muted);font-size:11px}
@@ -91,9 +83,9 @@ code,.mono{font-family:var(--mono);font-size:.88em}
 .msg.user .bubble{background:var(--user-bubble);color:var(--user-fg);border-color:transparent;border-bottom-right-radius:4px}
 .msg.bot .bubble{border-bottom-left-radius:4px}
 .bubble p{margin:0 0 8px}.bubble p:last-child{margin:0}
-.bubble .cit{display:inline-block;font-family:var(--mono);font-size:11px;padding:0 5px;border-radius:5px;background:var(--accent-soft);color:var(--accent);cursor:pointer;vertical-align:1px}
+.bubble .cit{display:inline-block;font-family:var(--mono);font-size:11px;padding:0 5px;border-radius:5px;background:var(--accent-soft);color:var(--text);border:1px solid var(--border);cursor:pointer;vertical-align:1px}
 .srcs{display:flex;flex-wrap:wrap;gap:6px}
-.src{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--accent);cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .meta{font-size:11.5px;color:var(--muted);font-family:var(--mono)}
 .welcome{max-width:760px;margin:30px auto;display:grid;gap:18px}
 .welcome h2{margin:0;font-size:24px;letter-spacing:-.01em;text-wrap:balance}
@@ -102,7 +94,7 @@ code,.mono{font-family:var(--mono);font-size:.88em}
 .step{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:grid;gap:6px;font-size:13.5px}
 .step .n{font-family:var(--mono);font-size:11px;color:var(--muted)}
 .step b{font-weight:600}
-.step.done{border-color:var(--good);background:var(--good-soft)}
+.step.done{border-color:var(--text)}
 .composer{padding:10px max(18px,env(safe-area-inset-right,0px)) max(14px,env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));background:var(--surface);border-top:1px solid var(--border)}
 .composer form{max-width:760px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}
 .composer textarea{flex:1;min-width:0;resize:none;min-height:44px;max-height:160px;padding:11px 14px;border:1px solid var(--border);border-radius:14px;background:var(--surface-2);line-height:1.4}
@@ -113,7 +105,7 @@ code,.mono{font-family:var(--mono);font-size:.88em}
 /* right panel */
 .tabs{display:flex;border-bottom:1px solid var(--border)}
 .tabs button{flex:1;padding:12px;border:0;background:none;font-size:13px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent}
-.tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.on{color:var(--text);border-bottom-color:var(--text)}
 .panel{padding:16px 18px;display:none;gap:14px;font-size:13.5px;overflow:auto}
 .panel.on{display:grid}
 .panel h3{margin:0;font-size:14px}
@@ -136,12 +128,13 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
 </style>
 </head>
 <body>
+<div class="shell">
+<nav class="nav"><a href="../index.html">← Back to portfolio</a><div class="name">Alexandria<span>Your documents, your AI key, cited answers</span></div><div class="row"><span class="meta" id="lockstate"></span></div></nav>
 <div class="app">
 
 <!-- LEFT: documents + settings -->
 <aside class="left">
-  <div class="brand"><div><h1>DocChat</h1><div class="sub">Your documents, your AI key, cited answers</div></div></div>
-
+  
   <div class="sec">
     <h2>Documents <span id="doccount" class="pill acc">0</span></h2>
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Upload documents"><b>Drop files here</b> or click to choose<br><span class="mono">.pdf .docx .md .txt .csv</span></div>
@@ -154,7 +147,9 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
     </div>
     <div class="row">
       <button class="btn small" id="embedall" title="Embed every chunk that isn't yet">Embed all</button>
-      <button class="btn small" id="exportidx">Export index</button>
+      <button class="btn small" id="exportidx">Export</button>
+      <button class="btn small" id="importidx">Import</button>
+      <input type="file" id="importfile" accept=".json" hidden>
       <button class="btn small" id="clearall">Clear all</button>
     </div>
   </div>
@@ -171,6 +166,11 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
     <div class="field" id="f-key"><label for="apikey">API key</label><input id="apikey" type="password" autocomplete="off" placeholder="sk-…"><div class="hint">Stored only in this browser (localStorage). Sent only to the provider you chose.</div></div>
     <div class="field" id="f-model"><label for="model">Model</label><input id="model" placeholder="model name"><div class="hint" id="modelhint"></div></div>
     <div class="row"><button class="btn small" id="testkey">Test connection</button><span id="keystatus" class="meta"></span></div>
+    <details id="vaultbox"><summary>Protect keys with a passphrase</summary>
+      <div class="field" style="margin-top:8px"><label for="passphrase">Passphrase</label><input id="passphrase" type="password" autocomplete="new-password" placeholder="at least 8 characters">
+        <div class="hint" id="vaulthint">Keys are encrypted in this browser with this passphrase (AES-GCM, PBKDF2). You'll be asked for it each time you open the app; without it the keys can't be read, even by someone with access to this computer.</div></div>
+      <div class="row"><button class="btn small" id="lockkeys">Encrypt &amp; lock</button><button class="btn small" id="unlockkeys" hidden>Unlock</button><button class="btn small" id="removelock" hidden>Remove passphrase</button></div>
+    </details>
   </div>
 
   <div class="sec">
@@ -249,6 +249,7 @@ details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
     <p>The last two exchanges are sent along, so "and for contractors?" works. Start a new chat to reset.</p>
   </div>
 </aside>
+</div>
 </div>
 
 <script>
@@ -584,7 +585,16 @@ function renderDocs() {
 $('doclist').addEventListener('click', async e => { const b = e.target.closest('[data-del]'); if (!b) return; docs = docs.filter(d => d.id !== b.dataset.del); await DB.del(b.dataset.del); renderDocs(); rebuildIndex(); });
 $('clearall').addEventListener('click', async () => { if (!docs.length) return; docs = []; await DB.clear(); renderDocs(); rebuildIndex(); history = []; toast('Cleared.'); });
 $('embedall').addEventListener('click', embedMissing);
-$('exportidx').addEventListener('click', () => { const blob = new Blob([JSON.stringify({exported: new Date().toISOString(), docs}, null, 0)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'docchat-index.json'; a.click(); });
+$('importidx').addEventListener('click', () => $('importfile').click());
+$('importfile').addEventListener('change', async () => {
+  const f = $('importfile').files[0]; $('importfile').value = ''; if (!f) return;
+  try { const data = JSON.parse(await f.text()); const list = Array.isArray(data) ? data : (data.docs || []);
+    let n = 0; for (const d of list) { if (!d || !d.id || !Array.isArray(d.chunks)) continue; if (docs.some(x => x.id === d.id)) continue; docs.push(d); await DB.put(d); n++; }
+    if (data.settings) { const {keys, embkeys, ...rest} = data.settings; Object.assign(settings, rest); saveSettings(); loadSettingsUI(); }
+    renderDocs(); rebuildIndex(); toast(`Imported ${n} document${n === 1 ? '' : 's'}.`);
+  } catch (e) { toast('Could not read that file: ' + e.message, 4000); }
+});
+$('exportidx').addEventListener('click', () => { const blob = new Blob([JSON.stringify({exported: new Date().toISOString(), docs, settings: {...settings, keys: {}, embkeys: {}}}, null, 0)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'alexandria-workspace.json'; a.click(); });
 const drop = $('drop'), fileIn = $('file');
 drop.addEventListener('click', () => fileIn.click()); drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileIn.click(); });
 fileIn.addEventListener('change', () => { addFiles(fileIn.files); fileIn.value = ''; });
@@ -594,7 +604,53 @@ drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
 document.addEventListener('dragover', e => e.preventDefault()); document.addEventListener('drop', e => { if (!drop.contains(e.target)) e.preventDefault(); });
 
 // ------------------------------------------------------------ settings UI
-function saveSettings() { LS.set('docchat.settings', settings); renderStatus(); }
+function saveSettings() {
+  if (VAULT.active) { const copy = {...settings, keys: {}, embkeys: {}}; LS.set('docchat.settings', copy); VAULT.persist(); }
+  else LS.set('docchat.settings', settings);
+  renderStatus();
+}
+
+// ------------------------------------------------------------ key vault: AES-GCM over the API keys, key derived from a passphrase
+const VAULT = {
+  active: !!LS.get('docchat.vault', null), cryptoKey: null, unlocked: false,
+  async derive(pass, salt) {
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations: 310000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+  },
+  b64: b => btoa(String.fromCharCode(...new Uint8Array(b))), unb64: s => Uint8Array.from(atob(s), c => c.charCodeAt(0)),
+  async lock(pass) {
+    const salt = crypto.getRandomValues(new Uint8Array(16)); this.cryptoKey = await this.derive(pass, salt); this.salt = salt;
+    this.active = true; this.unlocked = true; await this.persist(); saveSettings();
+  },
+  async persist() {
+    if (!this.cryptoKey) return;
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, this.cryptoKey, new TextEncoder().encode(JSON.stringify({keys: settings.keys, embkeys: settings.embkeys})));
+    LS.set('docchat.vault', {salt: this.b64(this.salt), iv: this.b64(iv), ct: this.b64(ct)});
+  },
+  async unlock(pass) {
+    const v = LS.get('docchat.vault', null); if (!v) return false;
+    try { this.salt = this.unb64(v.salt); const key = await this.derive(pass, this.salt);
+      const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv: this.unb64(v.iv)}, key, this.unb64(v.ct));
+      const data = JSON.parse(new TextDecoder().decode(pt)); settings.keys = data.keys || {}; settings.embkeys = data.embkeys || {};
+      this.cryptoKey = key; this.unlocked = true; return true;
+    } catch (e) { return false; }
+  },
+  remove() { try { localStorage.removeItem('docchat.vault'); } catch (e) {} this.active = false; this.unlocked = false; this.cryptoKey = null; LS.set('docchat.settings', settings); }
+};
+function renderVault() {
+  const locked = VAULT.active && !VAULT.unlocked;
+  $('lockkeys').hidden = VAULT.active; $('unlockkeys').hidden = !locked; $('removelock').hidden = !(VAULT.active && VAULT.unlocked);
+  $('apikey').disabled = $('embkey').disabled = locked;
+  $('lockstate').textContent = VAULT.active ? (locked ? 'keys locked' : 'keys encrypted') : '';
+  $('vaulthint').textContent = locked ? 'Enter your passphrase to unlock the stored keys for this session.' : VAULT.active ? 'Keys are encrypted at rest. They are decrypted only in memory for this session.' : "Keys are encrypted in this browser with this passphrase (AES-GCM, PBKDF2). You'll be asked for it each time you open the app; without it the keys can't be read, even by someone with access to this computer.";
+  if (locked) $('vaultbox').open = true;
+  renderStatus();
+}
+$('lockkeys').addEventListener('click', async () => { const pass = $('passphrase').value; if (pass.length < 8) { toast('Use at least 8 characters.'); return; } await VAULT.lock(pass); $('passphrase').value = ''; renderVault(); toast('Keys encrypted. You will need this passphrase next time.'); });
+$('unlockkeys').addEventListener('click', async () => { const ok = await VAULT.unlock($('passphrase').value); $('passphrase').value = ''; if (!ok) { toast('Wrong passphrase.'); return; } loadSettingsUI(); renderVault(); toast('Keys unlocked for this session.'); });
+$('passphrase').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); (VAULT.active && !VAULT.unlocked ? $('unlockkeys') : $('lockkeys')).click(); } });
+$('removelock').addEventListener('click', () => { VAULT.remove(); renderVault(); toast('Passphrase removed; keys stored unencrypted again.'); });
 function loadSettingsUI() {
   $('provider').value = settings.provider; $('apikey').value = settings.keys[settings.provider] || ''; $('model').value = settings.models[settings.provider] || DEFAULT_MODELS[settings.provider] || '';
   $('modelhint').textContent = MODEL_HINTS[settings.provider]; $('f-key').hidden = $('f-model').hidden = settings.provider === 'none';
@@ -622,7 +678,7 @@ function renderStatus() {
   $('status').innerHTML = `<span class="pill ${docs.length ? 'good' : 'warn'}">${docs.length} doc${docs.length===1?'':'s'} · ${INDEX.chunks.length} passages</span>` +
     `<span class="pill ${p==='none' ? 'warn' : keyFor(p) ? 'good' : 'bad'}">${p==='none' ? 'no model: quoting passages' : (keyFor(p) ? (settings.models[p]||DEFAULT_MODELS[p]) : p + ': key missing')}</span>` +
     `<span class="pill ${emb && embedded === INDEX.chunks.length && INDEX.chunks.length ? 'good' : emb ? 'warn' : 'acc'}">${emb ? `embeddings ${embedded}/${INDEX.chunks.length}` : 'keyword search'}</span>`;
-  $('note').textContent = p === 'none' ? 'No model selected: answers are the best-matching passage, quoted. Add a key for written answers.' : (emb ? '' : 'Keyword search only. Turn on embeddings for meaning-aware search and reliable "I don\'t know".');
+  $('note').textContent = (VAULT.active && !VAULT.unlocked) ? 'Keys are locked. Enter your passphrase under Answering model to use the AI.' : p === 'none' ? 'No model selected: answers are the best-matching passage, quoted. Add a key for written answers.' : (emb ? '' : 'Keyword search only. Turn on embeddings for meaning-aware search and reliable "I don\'t know".');
 }
 
 // ------------------------------------------------------------ right panel + chat controls
@@ -696,7 +752,9 @@ window.__docchat = {search, extractive, tokenize, cleanDocxMarkdown};  // for te
       repaired++;
     }
   }
-  loadSettingsUI(); renderDocs(); rebuildIndex();
+  if (VAULT.active) { settings.keys = {}; settings.embkeys = {}; }
+  loadSettingsUI(); renderVault(); renderDocs(); rebuildIndex();
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
   if (repaired) toast(`Re-indexed ${repaired} document${repaired > 1 ? 's' : ''} with the improved Word cleaner.`, 4000);
   if (docs.length) $('welcome').hidden = false;
 })();
