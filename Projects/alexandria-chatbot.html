@@ -288,7 +288,8 @@ const MODEL_HINTS = {openai:'Cheap and good: gpt-5-mini. Also gpt-5-nano, gpt-4.
 // ------------------------------------------------------------ text processing
 const STOP = new Set("a an the and or of to in on for is are was were be do does did i my me we our you your can could should would will what when where how much many get have has it its this that with from as at by about into if there any who whom whose which why may might need want know think please tell help also just still".split(' '));
 const stem = w => w.length > 5 ? w.replace(/(ing|edly|ed|es|s|ly)$/, '') : w.replace(/(es|s)$/, '');
-const tokenize = s => (s.toLowerCase().replace(/[\u2019'`]/g, '').match(/[a-z0-9][a-z0-9\-']*/g) || []).filter(w => !STOP.has(w) && w.length > 1 && w.length <= 25).map(stem);
+const NUMWORDS = {one:'1', two:'2', three:'3', four:'4', five:'5', six:'6', seven:'7', eight:'8', nine:'9', ten:'10', twelve:'12', twenty:'20', fifty:'50', hundred:'100'};
+const tokenize = s => (s.toLowerCase().replace(/[\u2019'`]/g, '').match(/[a-z0-9][a-z0-9\-']*/g) || []).map(w => NUMWORDS[w] || w).filter(w => !STOP.has(w) && (w.length > 1 || /\d/.test(w)) && w.length <= 25).map(stem);
 
 function chunkSections(sections, docName, maxWords=300, overlap=40) {
   // sections: [{section, text}] -> chunks with doc›section prefix; long sections split with overlap
@@ -420,7 +421,11 @@ async function search(q, k) {
   const top = [...fused.entries()].sort((a, b2) => b2[1]-a[1]).slice(0, k).map(([c, s]) => ({c, rrf:s, bm25:bmap.get(c)||0, cos:cmap.get(c)||0}));
   const conf = embedded ? Math.max(0, ...top.map(h => h.cos)) : Math.max(0, ...top.map(h => h.bm25));
   const autoGate = embedded ? (settings.embprov === 'openai' ? 0.32 : 0.55) : 1.0;
-  const gate = settings.gate ? (embedded ? settings.gate/100 : settings.gate/5) : autoGate;
+  // With a real model connected, keyword mode lets anything that matched at all through: the model is told to
+  // say "I couldn't find that" itself, and a wasted call costs a fraction of a cent. The strict keyword gate is
+  // only for quote-only mode, where there is nothing downstream to catch a bad passage.
+  const lenient = !embedded && settings.provider !== 'none';
+  const gate = settings.gate ? (embedded ? settings.gate/100 : settings.gate/5) : (lenient ? 0.05 : autoGate);
   return {top, terms, conf, gate, embedded, pass: top.length > 0 && conf >= gate};
 }
 
