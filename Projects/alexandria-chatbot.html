@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Alexandria</title>
+<title>DocChat</title>
 <meta name="description" content="Upload your documents, connect your own AI key, and ask questions with cited answers. Everything runs in your browser.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -288,7 +288,7 @@ const MODEL_HINTS = {openai:'Cheap and good: gpt-5-mini. Also gpt-5-nano, gpt-4.
 // ------------------------------------------------------------ text processing
 const STOP = new Set("a an the and or of to in on for is are was were be do does did i my me we our you your can could should would will what when where how much many get have has it its this that with from as at by about into if there any who whom whose which why may might need want know think please tell help also just still".split(' '));
 const stem = w => w.length > 5 ? w.replace(/(ing|edly|ed|es|s|ly)$/, '') : w.replace(/(es|s)$/, '');
-const tokenize = s => (s.toLowerCase().match(/[a-z0-9][a-z0-9\-']*/g) || []).filter(w => !STOP.has(w) && w.length > 1).map(stem);
+const tokenize = s => (s.toLowerCase().replace(/[\u2019'`]/g, '').match(/[a-z0-9][a-z0-9\-']*/g) || []).filter(w => !STOP.has(w) && w.length > 1 && w.length <= 25).map(stem);
 
 function chunkSections(sections, docName, maxWords=300, overlap=40) {
   // sections: [{section, text}] -> chunks with doc›section prefix; long sections split with overlap
@@ -301,13 +301,33 @@ function chunkSections(sections, docName, maxWords=300, overlap=40) {
     if (words.length < 12) { carry = `${section}: ${body}`; return; }
     const step = maxWords - overlap;
     for (let i = 0; i < words.length; i += step) {
-      const piece = words.slice(i, i + maxWords).join(' ');
+      const piece = words.slice(i, i + maxWords).join(' ').slice(0, 2500);
       out.push({section, text: `${docName} › ${section}\n${piece}`});
       if (words.length <= maxWords) break;
     }
   });
   if (carry && out.length) out[out.length-1].text += '\n' + carry;
   return out;
+}
+
+// Word exports via mammoth carry embedded images as base64, escaped punctuation, anchors and bold-as-heading lines.
+function cleanDocxMarkdown(md) {
+  let t = md.replace(/\r/g, '');
+  t = t.replace(/!\[[^\]]*\]\([^)]*\)/g, '');            // images (including data: URIs)
+  t = t.replace(/\[\s*\]\([^)]*\)/g, '');               // empty links
+  t = t.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');         // links -> their text
+  t = t.replace(/\]\([^)]*\)/g, '');                      // stray link tails
+  t = t.replace(/data:[a-z]+\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g, '');
+  t = t.replace(/<[^>]+>/g, '');                           // html tags / anchors
+  t = t.replace(/\\([.\-*_#()\[\]!+|>~`])/g, '$1');         // mammoth escapes
+  t = t.replace(/(?:__|\*\*)\s*([^_*\n]{3,90}?)\s*\n(?:__|\*\*)\s*$/gm, '\n## $1');   // bold heading split over two lines
+  t = t.replace(/^\s*(?:__|\*\*)\s*([^_*\n]{3,90}?)\s*(?:__|\*\*)\s*$/gm, '## $1');      // bold-only line = heading
+  t = t.replace(/(?:__|\*\*)\s*\n\s*([^_*\n]{3,90}?)\s*(?:__|\*\*)\s*$/gm, '\n## $1');   // bold opening on the line before
+  t = t.replace(/([^\n])[ \t]*#{2,}[ \t]*/g, '$1 ');          // heading marks that landed mid-line
+  t = t.replace(/^[\s_*]+$/gm, '');                        // lines of underscores/asterisks
+  t = t.replace(/(__|\*\*)/g, '');                          // remaining bold markers
+  t = t.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+  return t.trim();
 }
 
 function sectionsFromMarkdown(md, fallbackTitle) {
@@ -320,6 +340,8 @@ function sectionsFromMarkdown(md, fallbackTitle) {
       secs.push({section: heading, text: body}); }
     else if (p.trim()) { const t = p.trim();
       if (!secs.length && t.length < 80 && !t.includes('\n')) { title = t; return; }  // a lone first line is the title
+      if (!secs.length) { const first = t.split('\n')[0].trim(); const rest = t.split('\n').slice(1).join('\n').trim();
+        if (first.length < 80 && !/[.:;,]$/.test(first) && rest) { title = first; secs.push({section: 'Introduction', text: rest}); return; } }
       secs.push({section: secs.length ? 'Continued' : 'Introduction', text: t}); }
   });
   return {title, secs};
@@ -355,7 +377,7 @@ async function parsePdf(buf) {
 async function parseFile(file) {
   const name = file.name.replace(/\.[^.]+$/, ''); const ext = (file.name.split('.').pop()||'').toLowerCase();
   if (ext === 'pdf') { const r = await parsePdf(await file.arrayBuffer()); return {kind:'pdf', title: r.title || name, secs: r.secs, note: `${r.pages} pages`}; }
-  if (ext === 'docx') { const r = await mammoth.convertToMarkdown({arrayBuffer: await file.arrayBuffer()}); const m = sectionsFromMarkdown(r.value.replace(/\\([.\-*_#()\[\]!+])/g, '$1'), name); return {kind:'docx', title:m.title, secs:m.secs}; }
+  if (ext === 'docx') { const r = await mammoth.convertToMarkdown({arrayBuffer: await file.arrayBuffer()}, {convertImage: mammoth.images.imgElement(() => Promise.resolve({src: ''}))}); const m = sectionsFromMarkdown(cleanDocxMarkdown(r.value), name); return {kind:'docx', title:m.title, secs:m.secs}; }
   const txt = await file.text();
   if (ext === 'md' || ext === 'markdown') { const m = sectionsFromMarkdown(txt, name); return {kind:'md', title:m.title, secs:m.secs}; }
   if (ext === 'csv') { const rows = txt.replace(/\r/g,'').split('\n').filter(Boolean); const header = rows[0]; const secs = [];
@@ -396,7 +418,7 @@ async function search(q, k) {
   lists.forEach(l => l.forEach((c, r) => fused.set(c, (fused.get(c)||0) + 1/(60+r))));
   const top = [...fused.entries()].sort((a, b2) => b2[1]-a[1]).slice(0, k).map(([c, s]) => ({c, rrf:s, bm25:bmap.get(c)||0, cos:cmap.get(c)||0}));
   const conf = embedded ? Math.max(0, ...top.map(h => h.cos)) : Math.max(0, ...top.map(h => h.bm25));
-  const autoGate = embedded ? (settings.embprov === 'openai' ? 0.32 : 0.55) : 2.0;
+  const autoGate = embedded ? (settings.embprov === 'openai' ? 0.32 : 0.55) : 1.0;
   const gate = settings.gate ? (embedded ? settings.gate/100 : settings.gate/5) : autoGate;
   return {top, terms, conf, gate, embedded, pass: top.length > 0 && conf >= gate};
 }
@@ -453,8 +475,9 @@ async function callModel(question, hits) {
 function extractive(hits, terms) {
   const body = hits[0].c.text.split('\n').slice(1).join('\n').trim();
   if (body.length <= 450) return body + ' [1]';
-  const sents = body.match(/[^.!?]+[.!?]+/g) || [body];
-  const scored = sents.map((s, i) => ({s: s.trim(), i, n: terms.filter(t => tokenize(s).includes(t)).length}));
+  const sents = body.split(/(?<=[.!?])\s+|\n+|\s+-\s+|\s+\u2022\s+/).map(x => x.trim()).filter(x => x.length > 15);
+  if (!sents.length) return body + ' [1]';
+  const scored = sents.map((s, i) => ({s, i, n: terms.filter(t => tokenize(s).includes(t)).length}));
   const best = scored.filter(x => x.n > 0).sort((a, b2) => b2.n - a.n || a.i - b2.i).slice(0, 2).sort((a, b2) => a.i - b2.i);
   return (best.length ? best : scored.slice(0, 1)).map(x => x.s).join(' ') + ' [1]';
 }
@@ -489,6 +512,7 @@ async function ask(question) {
   $('askbtn').disabled = false; $('chat').scrollTop = $('chat').scrollHeight;
 }
 function renderAnswer(text) {
+  text = text.replace(/(__|\*\*)/g, '');
   return esc(text).split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g, '<br>').replace(/\[(\d+)\]/g, '<span class="cit" data-src="$1">[$1]</span>') + '</p>').join('');
 }
 function addMsg(role, html) {
@@ -496,7 +520,7 @@ function addMsg(role, html) {
   $('chat').appendChild(d); $('chat').scrollTop = $('chat').scrollHeight; return d;
 }
 function highlight(text, terms) {
-  let out = esc(text); const words = new Set((text.toLowerCase().match(/[a-z0-9][a-z0-9\-']*/g)||[]).filter(w => terms.includes(stem(w)) && w.length > 2));
+  let out = esc(text); const words = new Set((text.toLowerCase().replace(/[\u2019'`]/g, '').match(/[a-z0-9][a-z0-9\-']*/g)||[]).filter(w => terms.includes(stem(w)) && w.length > 2));
   words.forEach(w => { out = out.replace(new RegExp('\\b(' + w.replace(/[-]/g,'\\-') + ')\\b', 'gi'), '<mark>$1</mark>'); }); return out;
 }
 function renderSources(top, terms) {
@@ -645,7 +669,18 @@ $('loadsample').addEventListener('click', e => { e.preventDefault(); addFiles([n
 // ------------------------------------------------------------ boot
 (async () => {
   try { await DB.open(); docs = await DB.all(); } catch (e) { toast('Browser storage unavailable; documents will not persist.', 4000); }
+  let repaired = 0;
+  for (const d of docs) {
+    if ((d.chunks || []).some(c => /data:[a-z]+\/|\]\(|__/.test(c.text))) {
+      const body = d.chunks.map(c => c.text.split('\n').slice(1).join('\n')).join('\n\n');
+      const m = sectionsFromMarkdown(cleanDocxMarkdown(body), d.title || d.name);
+      d.chunks = chunkSections(m.secs, d.title || d.name).map((c, i) => ({id: d.id + ':' + i, doc: d.title || d.name, section: c.section, text: c.text}));
+      try { await DB.put(d); } catch (e) {}
+      repaired++;
+    }
+  }
   loadSettingsUI(); renderDocs(); rebuildIndex();
+  if (repaired) toast(`Re-indexed ${repaired} document${repaired > 1 ? 's' : ''} with the improved Word cleaner.`, 4000);
   if (docs.length) $('welcome').hidden = false;
 })();
 })();
