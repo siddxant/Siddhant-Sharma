@@ -297,11 +297,11 @@ function chunkSections(sections, docName, maxWords=300, overlap=40) {
     let body = text.replace(/\s+\n/g, '\n').trim();
     if (!body) return;
     if (carry) { body = carry + '\n\n' + body; carry = null; }
-    const words = body.split(/\s+/);
+    const words = body.replace(/\n/g, ' \n ').split(/[ \t]+/).filter(Boolean);
     if (words.length < 12) { carry = `${section}: ${body}`; return; }
     const step = maxWords - overlap;
     for (let i = 0; i < words.length; i += step) {
-      const piece = words.slice(i, i + maxWords).join(' ').slice(0, 2500);
+      const piece = words.slice(i, i + maxWords).join(' ').replace(/ ?\n ?/g, '\n').replace(/\n{3,}/g, '\n\n').trim().slice(0, 2500);
       out.push({section, text: `${docName} › ${section}\n${piece}`});
       if (words.length <= maxWords) break;
     }
@@ -327,6 +327,7 @@ function cleanDocxMarkdown(md) {
   t = t.replace(/^[\s_*]+$/gm, '');                        // lines of underscores/asterisks
   t = t.replace(/(__|\*\*)/g, '');                          // remaining bold markers
   t = t.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+  t = t.replace(/^([^\n#][^\n]{2,60}[^.:!?\n])\n+(?=\d)/gm, '$1: ');   // 'Number of schools' + newline + '478 ...' -> one line
   return t.trim();
 }
 
@@ -472,14 +473,23 @@ async function callModel(question, hits) {
   throw new Error('unknown provider');
 }
 
-function extractive(hits, terms) {
-  const body = hits[0].c.text.split('\n').slice(1).join('\n').trim();
-  if (body.length <= 450) return body + ' [1]';
-  const sents = body.split(/(?<=[.!?])\s+|\n+|\s+-\s+|\s+\u2022\s+/).map(x => x.trim()).filter(x => x.length > 15);
-  if (!sents.length) return body + ' [1]';
-  const scored = sents.map((s, i) => ({s, i, n: terms.filter(t => tokenize(s).includes(t)).length}));
-  const best = scored.filter(x => x.n > 0).sort((a, b2) => b2.n - a.n || a.i - b2.i).slice(0, 2).sort((a, b2) => a.i - b2.i);
-  return (best.length ? best : scored.slice(0, 1)).map(x => x.s).join(' ') + ' [1]';
+function extractive(hits, terms, question) {
+  // No model: pick the 1-2 sentences across the top passages that best match the question.
+  const wantsNumber = /\b(how many|how much|number of|what percentage|what %|how long|how old|when)\b/i.test(question || '');
+  const cands = [];
+  hits.slice(0, 5).forEach((h, hi) => {
+    const body = h.c.text.split('\n').slice(1).join('\n').trim();
+    body.split(/(?<=[.!?])\s+|\n+|\s+-\s+|\s+\u2022\s+/).map(x => x.trim()).filter(x => x.length > 15).forEach((sent, si) => {
+      const toks = tokenize(sent); const n = terms.filter(t => toks.includes(t)).length;
+      if (!n) return;
+      cands.push({s: sent, hi, si, score: n + (wantsNumber && /\b\d/.test(sent) ? 1.5 : 0) - hi * 0.3});
+    });
+  });
+  if (!cands.length) { const body = hits[0].c.text.split('\n').slice(1).join('\n').trim(); return body.slice(0, 450) + ' [1]'; }
+  cands.sort((a, b2) => b2.score - a.score || a.hi - b2.hi || a.si - b2.si);
+  const top = cands[0]; const second = cands.find(c => c !== top && c.hi === top.hi && Math.abs(c.si - top.si) === 1 && c.score >= top.score - 1);
+  const picked = second ? [top, second].sort((a, b2) => a.si - b2.si) : [top];
+  return picked.map(x => x.s).join(' ') + ` [${top.hi + 1}]`;
 }
 
 // ------------------------------------------------------------ ask flow
@@ -496,7 +506,7 @@ async function ask(question) {
     lastHits = r.top; renderSources(r.top, r.terms);
     let text, usage = null, gated = false;
     if (!r.pass) { gated = true; text = "I couldn't find that in the documents. Try rephrasing with the words the document would use, or check the Sources tab to see the closest passages."; }
-    else if (settings.provider === 'none') text = extractive(r.top, r.terms);
+    else if (settings.provider === 'none') text = extractive(r.top, r.terms, question);
     else { const out = await callModel(question, r.top); text = out.text; usage = out.usage; }
     const cited = new Set([...text.matchAll(/\[(\d+)\]/g)].map(m => +m[1]));
     const srcs = gated ? [] : r.top.filter((h, i) => cited.has(i+1));
@@ -665,6 +675,8 @@ Employees who refer a hired candidate receive a $2,000 referral bonus, paid afte
 Staff observe the public holidays of their country of employment. In addition, the company closes between 24 December and 1 January; these days do not count against annual leave.
 `;
 $('loadsample').addEventListener('click', e => { e.preventDefault(); addFiles([new File([SAMPLE], 'kestrel-labs-handbook.md', {type:'text/markdown'})]); toast('Sample handbook added. Try: "Can I expense a standing desk?"'); });
+
+window.__docchat = {search, extractive, tokenize, cleanDocxMarkdown};  // for tests and debugging in the console
 
 // ------------------------------------------------------------ boot
 (async () => {
