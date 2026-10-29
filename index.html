@@ -2,686 +2,597 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DocChat</title>
-<meta name="description" content="Upload your documents, connect your own AI key, and ask questions with cited answers. Everything runs in your browser.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio</title>
+<meta name="description" content="Portfolio — experience, case studies and personal projects.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+/* =====================================================================
+   ✏️  YOUR CONTENT — edit everything in this block.
+   - Text: change anything between the quotes.
+   - Images: paste any image URL (or put the image next to index.html
+     and write its file name, e.g. "images/me.jpg").
+   - Add a project / case study / job: copy one { ... }, block, paste it
+     below the last one and edit. Delete a block to remove it.
+   - Order on the page = order in this list.
+   ===================================================================== */
+window.PORTFOLIO = {
+
+  profile: {
+    name: "Siddhant Sharma",
+     logo_url: "https://drive.google.com/file/d/1SQSmx6qo75xBaYn5SshgAqlJHMrnQYlg/view?usp=sharing",   // or any image URL
+    role: "AI-led Strategy & Products",
+    // eyebrow: "Portfolio / Product, Growth & Strategy",
+    headline: "Building products people love.",
+    headline_italic: "One experiment at a time.",
+    intro: "I work at the intersection of growth, product, and operations. Below is a deep dive into my work, followed by case studies and personal projects. Contact: siddhantsharma164@gmail.com",
+    status: "Building",          // leave "" to hide
+    location: "India",
+    email: "siddhantsharma164@gmail.com",
+    avatar_url: "https://picsum.photos/seed/portrait/600/600",
+    resume_url: "https://drive.google.com/file/d/15E-XD33vf5twJ6fESx866Vrg8akVFU5c/view?usp=sharing", // leave "" to hide the Resume button
+    primary_cta_label: "View my work",   primary_cta_link: "#experience",
+    secondary_cta_label: "Get in touch", secondary_cta_link: "#contact",
+    contact_heading: "Let's build something",
+    contact_heading_italic: "worth talking about.",
+    contact_text: "Have a role, a project or just a good idea? My inbox is open."
+  },
+
+  /* ---------- 01 · Experience (newest first) ---------- */
+  experience: [
+    {
+      company: "Tetr College of Business", role: "Founder's Office", type: "Full-time", location: "United States",
+      start: "March 2024", end: "Present",
+      logo_url: "https://drive.google.com/file/d/1ZslYub0hhYp0w-XyQkSI39t8Zph0FQ8M/view?usp=sharing",                       // optional company logo
+      company_url: "https://tetr.com", // optional
+      summary: "Second hire into a pre-revenue company. Built the operating, commercial and financial infrastructure the business runs on today, working directly with the founders on every strategic decision through the first two years",
+      highlights: [
+         "Ran international revenue operations, owning sales team performance and the full funnel from first inquiry to close, and built the first reporting layer giving leadership live pipeline, conversion and forecast visibility across 180 markets",
+         "As volume outgrew people, led product for the core operational platform: PRD, engineering, rollout. Eliminated 20+ FTEs of manual work, automated the customer journey end to end, and introduced AI-driven evaluation across hundreds of thousands of inbound records",
+         "Worked with the founders on the $18M raise, running investor outreach, due diligence, business plan, financial model and pitch materials through close, then owned the data room and board reporting. Led regulatory approvals across multiple geographies in parallel",
+      ],
+      metrics: [ { value: "200%", label: "YoY Growth" }, { value: "150%", label: "Annual User Growth" }, { value: "QS Gold Award", label: "Most Innovative B-School 2025" } ],
+      skills: ["Product strategy", "SQL", "Figma", "Zapier", "N8N", "Revenue operations", "Partnerships contract negotiation", "Product management", "Investor relations",
+"Go-to-market strategy", "Compliance frameworks", "CRM implementation", "MS Suite"]
+    },
+    // {
+    //   company: "Brightside", role: "Growth Associate", type: "Full-time", location: "Mumbai",
+    //   start: "Jun 2023", end: "Dec 2024", logo_url: "", company_url: "",
+    //   summary: "Drove acquisition experiments for a consumer fintech app from 50k to 400k users.",
+    //   highlights: [
+          
+
+    //     "Designed a referral programme that became the #2 acquisition channel",
+    //     "Rebuilt lifecycle emails with segmentation — open rates up 41%",
+    //     "Built the CAC/LTV model used in the Series A deck"
+    //   ],
+    //   metrics: [ { value: "8x", label: "user growth" }, { value: "41%", label: "higher open rate" } ],
+    //   skills: ["Growth", "Lifecycle", "Braze", "Excel modelling"]
+    // },
+    // {
+    //   company: "Studio Kaya", role: "Strategy Intern", type: "Internship", location: "Delhi",
+    //   start: "Jan 2023", end: "May 2023", logo_url: "", company_url: "",
+    //   summary: "Supported brand and go-to-market strategy for three D2C clients.",
+    //   highlights: [ "Ran a competitive teardown across 40 brands", "Wrote the positioning narrative adopted for a relaunch" ],
+    //   metrics: [ { value: "3", label: "client launches" } ],
+    //   skills: ["Research", "Positioning", "Storytelling"]
+    // }
+  ],
+
+  /* ---------- 02 · Case studies ---------- */
+  cases: [
+    {
+      title: "Core Product for Revenue Ops", client: "Tetr", category: "Product", year: "2025",
+      banner_url: "https://drive.google.com/file/d/1ApnHc7L1rvLgzKnA_TO8YNCwywAF8E93/view?usp=sharing",
+      summary: "Built the framework to align processes across marketing, sales, customer success, and finance",
+      problem: "Every vertical was in an operational silo and executing tasks manually",
+      approach: "Mapped the complete customer journey, built the infrastructure to provide real-time insights and forecasting",
+      outcome: "Activation tripled and new-user support tickets halved",
+      metrics: [ { value: "3x", label: "activation" }, { value: "-50%", label: "onboarding tickets" } ],
+      link: "CaseStudies/tetr-revops.html"   // page that opens on click
+    },
+    {
+      title: "From being called, “Too good to be true” to Globally Recognized", client: "Tetr", category: "Growth", year: "2026",
+      banner_url: "https://drive.google.com/file/d/1qT-lyU5gXDMA7npj_4r1keioV36zFCu0/view?usp=sharing",
+      summary: "Building credibility in the US, Europe, Latin America and China for a brand the market first read as local.",
+      problem: "Every channel bought attention abroad, but none of it converted into trust as families saw an Indian institution, not a global one",
+      approach: "Tested six channels, cut influencer marketing for not repeating, repositioned performance marketing as a long-term bet, and built a B2B counsellor network and word-of-mouth flywheel as the core engine",
+      outcome: "B2B became the #1 acquisition channel within one quarter.",
+      metrics: [ { value: "600%", label: "student growth in 3 years" }, { value: "77", label: "countries in the counsellor network" } ],
+      link: "CaseStudies/tetr-growth.html"
+    }
+  ],
+
+  /* ---------- 03 · Personal projects (4 per row on large screens, 1 on phones) ---------- */
+  projects: [
+    { title: "AI UGC Content Creator", description: "A code-first pipeline that invents a character, trains a model on its face, and produces consistent Instagram posts and talking videos for cents.",
+     tags: ["AI", "Systems", "Python"], year: "2026", banner_url: "https://picsum.photos/seed/proj-aiugc/1200/750", link: "Projects/AI-UGC.html" },
+    { title: "Unit Economics at Scale", description: "Why three product lines with the same 3.2x LTV:CAC need $405K to $3.8M to grow. A full P&L, CAC/LTV and payback model in Excel.",
+     tags: ["Finance", "Excel", "Analytics"], year: "2026", banner_url: "https://picsum.photos/seed/proj-unit-economics/1200/750", link: "Projects/Unit-Economics.html" },
+   { title: "Alexandria (Chatbot)", description: "A company-docs assistant that answers from all the files in your company database, and runs for about $5 a month.",
+    tags: ["RAG", "AI workflow", "Embeddings"], year: "2026", banner_url: "https://picsum.photos/seed/proj-alexandria/1200/750", link: "Projects/alexandria-chatbot.html" },
+  ],
+
+  /* ---------- Contact links ---------- */
+  socials: [
+    { label: "LinkedIn", url: "https://www.linkedin.com/in/methlox/" },
+    { label: "GitHub",   url: "https://github.com/methlox" },
+    { label: "Email",    url: "mailto:siddhantsharma164@gmail.com" }
+  ]
+};
+</script>
 <style>
-/* Layout: fixed left rail (documents + settings), chat column, collapsible right panel (format guide / sources). Stacks on phones. */
 :root{
-  --bg:#F4F5F9; --surface:#FFFFFF; --surface-2:#F8F9FC; --border:#E3E6EE; --text:#111827; --muted:#6B7280;
-  --accent:#1D4ED8; --accent-soft:#E7EDFD; --accent-fg:#FFFFFF;
-  --good:#166534; --good-soft:#DCFCE7; --warn:#92400E; --warn-soft:#FEF3C7; --bad:#991B1B; --bad-soft:#FEE2E2;
-  --hl:#FDE68A; --user-bubble:#1D4ED8; --user-fg:#FFFFFF;
-  --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --navy-900:#0b1433; --navy-800:#101c45; --navy-700:#16275a; --navy-600:#1f3673; --navy-500:#2c4a8f;
+  --line-dark:rgba(170,190,255,.18); --ink-on-dark:#eef1ff; --muted-on-dark:#a9b3d6;
+  --lav:#c9d2ff; --lav-2:#e3e8ff; --violet:#8b7cf6; --blue:#5b9cf5; --ok:#5fd39a;
+  --paper:#f3f4f9; --card:#ffffff; --ink:#0e1633; --muted:#5a6488; --line:#dfe3f0;
+  --radius:18px; --gutter:clamp(16px,4vw,56px); --max:1320px;
+  --sans:"Inter Tight",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --serif:"Instrument Serif",Georgia,serif; --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#0B0F1A; --surface:#121829; --surface-2:#0F1424; --border:#232B44; --text:#E5E9F5; --muted:#97A1BD;
-    --accent:#8FA8F5; --accent-soft:#1B2650; --accent-fg:#0B0F1A;
-    --good:#86EFAC; --good-soft:#12301E; --warn:#FCD34D; --warn-soft:#3A2A0A; --bad:#FCA5A5; --bad-soft:#3B1515;
-    --hl:#5B4A12; --user-bubble:#2F4FB8; --user-fg:#FFFFFF; color-scheme:dark;
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.5}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.eyebrow{display:flex;align-items:center;gap:14px;color:var(--muted)}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.dark .eyebrow{color:var(--ink-on-dark)}
+.dark{background:radial-gradient(1200px 700px at 85% 30%,#2a4a93 0%,transparent 60%),linear-gradient(135deg,var(--navy-900) 0%,var(--navy-800) 45%,#27437f 100%);color:var(--ink-on-dark)}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:16px 28px;border-radius:999px;background:linear-gradient(180deg,var(--lav-2),var(--lav));color:var(--navy-800);font-weight:500;font-size:17px;box-shadow:0 8px 30px -10px rgba(160,175,255,.6);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px -10px rgba(160,175,255,.8)}
+.link-u{display:inline-flex;align-items:center;gap:6px;padding:14px 0;border-bottom:1.5px solid currentColor;font-size:17px}
+.arrow{font-size:.9em;transition:transform .2s}
+a:hover .arrow{transform:translate(2px,-2px)}
+
+/* ---------- Nav ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(11,20,51,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line-dark);color:var(--ink-on-dark)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:78px}
+.brand{display:flex;align-items:center;gap:12px;font-size:24px;font-weight:500;letter-spacing:-.02em}
+.brand-mark{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,var(--lav-2),var(--violet));color:var(--navy-900);font-weight:600;font-size:15px}
+.brand-mark{overflow:hidden}.brand-mark img{width:100%;height:100%;object-fit:cover}
+.nav-links{display:flex;align-items:center;gap:36px;font-size:16px}
+.nav-links a:not(.btn){color:var(--muted-on-dark);transition:color .2s}
+.nav-links a:not(.btn):hover{color:#fff}
+.nav-links .btn{padding:12px 22px;font-size:15px}
+.burger{display:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line-dark);align-items:center;justify-content:center}
+.burger span,.burger span::before,.burger span::after{display:block;width:18px;height:1.5px;background:#fff;position:relative;transition:.25s}
+.burger span::before,.burger span::after{content:"";position:absolute}
+.burger span::before{top:-6px}.burger span::after{top:6px}
+.nav.open .burger span{background:transparent}
+.nav.open .burger span::before{top:0;transform:rotate(45deg)}
+.nav.open .burger span::after{top:0;transform:rotate(-45deg)}
+
+/* ---------- Hero ---------- */
+.hero{padding-top:clamp(56px,9vw,120px)}
+.hero-grid{display:block}
+.hero h1{font-weight:400;letter-spacing:-.045em;line-height:1;font-size:clamp(44px,8vw,128px);margin:28px 0 0}
+.hero h1 em{display:block;font-family:var(--serif);font-style:italic;letter-spacing:-.02em;color:var(--lav-2);margin-top:.08em}
+.hero p.lead{max-width:980px;margin-top:32px;font-size:clamp(17px,1.5vw,21px);line-height:1.65;color:#d6dcf5;font-weight:300}
+.hero-cta{display:flex;flex-wrap:wrap;align-items:center;gap:20px 36px;margin-top:40px}
+.status{display:inline-flex;align-items:center;gap:10px;margin-top:28px;font-size:14px;color:var(--muted-on-dark)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(95,211,154,.18)}
+
+/* hero panel (echoes the reference's diagram card) */
+.panel{border:1px solid var(--line-dark);border-radius:22px;background:rgba(16,28,69,.55);backdrop-filter:blur(6px);overflow:hidden}
+.panel-top{display:grid;grid-template-columns:1fr 1fr}
+.pane{padding:28px 30px 30px}
+.pane+.pane{border-left:1px solid var(--line-dark)}
+.pane h3{font-weight:400;font-size:clamp(24px,2.2vw,32px);letter-spacing:-.03em}
+.pane .sub{color:var(--muted-on-dark);font-size:14px;margin-top:6px}
+.avatar{width:100%;aspect-ratio:1;border-radius:14px;object-fit:cover;margin-top:22px;border:1px solid var(--line-dark);background:var(--navy-700)}
+.now-card{margin-top:22px;border:1px solid var(--line-dark);border-radius:12px;padding:14px 16px;background:rgba(255,255,255,.03)}
+.now-card b{display:block;font-weight:500;font-size:15px}
+.now-card span{font-size:13px;color:var(--muted-on-dark)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:12.5px;padding:6px 11px;border-radius:999px;border:1px solid var(--line-dark);color:#dfe4ff;background:rgba(255,255,255,.03)}
+.panel-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 30px;border-top:1px solid var(--line-dark)}
+.panel-bar strong{font-weight:400;font-size:22px;letter-spacing:-.02em}
+.panel-bar .mono{font-size:11px;color:var(--muted-on-dark);text-transform:none;letter-spacing:.04em}
+.timeline-viz{padding:26px 30px 28px;border-top:1px solid var(--line-dark)}
+.tv-row{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:14px;margin:9px 0;font-size:12.5px;color:var(--muted-on-dark)}
+.tv-row span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tv-track{height:12px;border-radius:4px;background:rgba(255,255,255,.05);position:relative}
+.tv-bar{position:absolute;top:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,var(--violet),var(--blue))}
+.legend{display:flex;justify-content:center;gap:28px;margin-top:18px;font-family:var(--mono);font-size:11px;color:var(--muted-on-dark)}
+.legend i{display:inline-block;width:7px;height:7px;margin-right:8px;background:var(--violet);vertical-align:middle}
+
+/* logo strip */
+.strip{margin-top:clamp(56px,8vw,96px);padding-bottom:28px}
+.strip-label{font-size:17px;color:var(--muted-on-dark)}
+.strip-label b{color:#fff;font-weight:400}
+.logos{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:28px 48px;margin-top:22px;padding-top:30px;border-top:1px solid var(--line-dark)}
+.logos a,.logos div{display:flex;align-items:center;gap:12px;font-size:clamp(20px,2.2vw,30px);letter-spacing:-.03em;font-weight:500;color:#fff;opacity:.9}
+.logos img{height:34px;width:auto;max-width:160px;object-fit:contain}
+.scroll-hint{text-align:center;padding:34px 0 30px;font-family:var(--mono);font-size:14px;color:#dfe4ff;letter-spacing:.06em}
+
+/* ---------- Sections ---------- */
+section.block{padding:clamp(72px,10vw,140px) 0}
+.sec-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px;margin-bottom:clamp(36px,5vw,64px)}
+.sec-head h2{font-weight:400;font-size:clamp(36px,5vw,68px);letter-spacing:-.045em;line-height:1.02;margin-top:18px}
+.sec-head h2 em{font-family:var(--serif);letter-spacing:-.01em;color:var(--navy-500)}
+.dark .sec-head h2 em{color:var(--lav-2)}
+.sec-head p{max-width:380px;color:var(--muted);font-size:16px}
+.dark .sec-head p{color:var(--muted-on-dark)}
+.count{font-family:var(--mono);font-size:13px;color:var(--muted)}
+
+/* ---------- Experience ---------- */
+.exp-list{border-top:1px solid var(--line)}
+.exp{border-bottom:1px solid var(--line)}
+.exp-head{width:100%;display:grid;grid-template-columns:190px 56px 1fr auto;align-items:center;gap:24px;padding:30px 0;text-align:left}
+.exp-period{font-family:var(--mono);font-size:12.5px;color:var(--muted);letter-spacing:.04em}
+.exp-logo{width:56px;height:56px;border-radius:14px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;overflow:hidden;font-weight:600;color:var(--navy-500)}
+.exp-logo img{width:100%;height:100%;object-fit:contain;padding:8px}
+.exp-title{font-size:clamp(21px,2.2vw,30px);letter-spacing:-.03em;line-height:1.15}
+.exp-title .at{font-family:var(--serif);font-style:italic;color:var(--muted);padding:0 .15em}
+.exp-meta{font-size:14px;color:var(--muted);margin-top:4px}
+.toggle{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:.3s;background:var(--card);flex-shrink:0}
+.toggle::before{content:"+";font-size:22px;font-weight:300;line-height:1;transition:.3s}
+.exp.open .toggle{background:var(--navy-800);border-color:var(--navy-800);color:#fff}
+.exp.open .toggle::before{transform:rotate(45deg)}
+.exp-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s ease}
+.exp.open .exp-body{grid-template-rows:1fr}
+.exp-body>div{overflow:hidden}
+.exp-inner{display:grid;grid-template-columns:190px 1fr;gap:24px;padding:0 0 40px}
+.exp-content{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;padding-left:80px}
+.exp-summary{font-size:19px;line-height:1.6;letter-spacing:-.01em}
+.hl{list-style:none;margin-top:22px}
+.hl li{position:relative;padding:12px 0 12px 26px;border-top:1px dashed var(--line);color:#2a3358;font-size:15.5px}
+.hl li::before{content:"";position:absolute;left:4px;top:21px;width:8px;height:8px;border-radius:2px;background:linear-gradient(135deg,var(--violet),var(--blue))}
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.metric b{display:block;font-weight:400;font-size:34px;letter-spacing:-.04em;line-height:1;color:var(--navy-700)}
+.metric span{display:block;margin-top:8px;font-size:13px;color:var(--muted)}
+.skills{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.skills span{font-size:13px;padding:6px 12px;border-radius:999px;background:#e8ebf7;color:#2a3358}
+.exp-link{display:inline-flex;gap:6px;margin-top:18px;font-size:14px;color:var(--navy-500);border-bottom:1px solid currentColor}
+
+/* ---------- Case studies ---------- */
+.cases{display:grid;gap:clamp(20px,3vw,32px)}
+.case{display:grid;grid-template-columns:1.1fr 1fr;border:1px solid var(--line-dark);border-radius:24px;overflow:hidden;background:rgba(16,28,69,.5);transition:transform .3s,border-color .3s}
+.case:hover{transform:translateY(-4px);border-color:rgba(201,210,255,.4)}
+.case:nth-child(even) .case-media{order:2}
+.case-media{position:relative;min-height:340px;overflow:hidden;background:var(--navy-700)}
+.case-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.case:hover .case-media img{transform:scale(1.04)}
+.case-body{padding:clamp(26px,3.5vw,48px);display:flex;flex-direction:column}
+.case-kicker{display:flex;flex-wrap:wrap;gap:10px 18px;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-on-dark)}
+.case h3{font-weight:400;font-size:clamp(26px,2.8vw,40px);letter-spacing:-.035em;line-height:1.1;margin-top:16px}
+.case .summary{color:#cfd6f3;margin-top:14px;font-size:16.5px;font-weight:300}
+.pao{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px;padding-top:22px;border-top:1px solid var(--line-dark)}
+.pao h4{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--lav)}
+.pao p{font-size:14px;color:#c3cbeb;margin-top:8px;line-height:1.55}
+.case-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:18px;margin-top:auto;padding-top:26px}
+.case-metrics{display:flex;gap:28px;flex-wrap:wrap}
+.case-metrics b{display:block;font-weight:400;font-size:30px;letter-spacing:-.04em;line-height:1}
+.case-metrics span{font-size:12.5px;color:var(--muted-on-dark)}
+.case .link-u{padding:8px 0;font-size:15px}
+
+/* ---------- Projects grid ---------- */
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(16px,2vw,26px)}
+.proj{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .3s,box-shadow .3s}
+.proj:hover{transform:translateY(-5px);box-shadow:0 24px 50px -24px rgba(16,28,69,.35)}
+.proj-img{aspect-ratio:16/10;overflow:hidden;background:linear-gradient(135deg,var(--navy-700),var(--navy-500))}
+.proj-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.proj:hover .proj-img img{transform:scale(1.05)}
+.proj-body{padding:20px 20px 22px;display:flex;flex-direction:column;flex:1}
+.proj-top{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.proj h3{font-weight:500;font-size:20px;letter-spacing:-.025em;margin-top:10px;line-height:1.2}
+.proj p{color:var(--muted);font-size:14.5px;margin-top:8px;flex:1}
+.proj-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--navy-500)}
+.ph{width:100%;height:100%;display:grid;place-items:center;font-family:var(--serif);font-style:italic;font-size:44px;color:rgba(255,255,255,.75);background:linear-gradient(135deg,var(--navy-700),var(--violet))}
+
+/* ---------- Contact / footer ---------- */
+.contact{padding:clamp(80px,11vw,150px) 0 0}
+.contact h2{font-weight:400;font-size:clamp(40px,6.5vw,96px);letter-spacing:-.05em;line-height:1}
+.contact h2 em{display:block;font-family:var(--serif);color:var(--lav-2);letter-spacing:-.02em}
+.contact p{max-width:560px;margin-top:26px;color:#d0d7f3;font-size:18px;font-weight:300}
+.socials{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px}
+.socials a{padding:12px 20px;border-radius:999px;border:1px solid var(--line-dark);font-size:15px;transition:.2s}
+.socials a:hover{background:rgba(255,255,255,.08);border-color:rgba(201,210,255,.4)}
+footer{margin-top:clamp(70px,9vw,120px);padding:28px 0;border-top:1px solid var(--line-dark);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:12px;color:var(--muted-on-dark)}
+
+/* reveal */
+.js-anim .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.js-anim .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}
+
+/* loading skeleton */
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1439px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:1100px){
+  .hero-grid{grid-template-columns:1fr}
+  .panel{max-width:720px}
+  .exp-head{grid-template-columns:150px 52px 1fr auto;gap:18px}
+  .exp-inner{grid-template-columns:1fr}
+  .exp-inner>.spacer{display:none}
+  .exp-content{padding-left:0;grid-template-columns:1fr;gap:28px}
+  .case,.case:nth-child(even){grid-template-columns:1fr}
+  .case:nth-child(even) .case-media{order:0}
+  .case-media{min-height:0;aspect-ratio:16/9}
 }
-:root[data-theme="dark"]{
-  --bg:#0B0F1A; --surface:#121829; --surface-2:#0F1424; --border:#232B44; --text:#E5E9F5; --muted:#97A1BD;
-  --accent:#8FA8F5; --accent-soft:#1B2650; --accent-fg:#0B0F1A;
-  --good:#86EFAC; --good-soft:#12301E; --warn:#FCD34D; --warn-soft:#3A2A0A; --bad:#FCA5A5; --bad-soft:#3B1515;
-  --hl:#5B4A12; --user-bubble:#2F4FB8; --user-fg:#FFFFFF; color-scheme:dark;
+@media (max-width:900px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nav-links{position:fixed;top:78px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;padding:12px var(--gutter) 24px;background:var(--navy-900);border-bottom:1px solid var(--line-dark);transform:translateY(-12px);opacity:0;pointer-events:none;transition:.25s}
+  .nav-links a:not(.btn){padding:16px 0;border-bottom:1px solid var(--line-dark);font-size:18px;color:#fff}
+  .nav-links .btn{margin-top:18px;justify-content:center}
+  .nav.open .nav-links{transform:none;opacity:1;pointer-events:auto}
+  .burger{display:flex}
+  .sec-head{grid-template-columns:1fr}
+  .pao{grid-template-columns:1fr}
 }
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:var(--accent)}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer}
-code,.mono{font-family:var(--mono);font-size:.88em}
-.app{display:grid;grid-template-columns:300px minmax(0,1fr) 320px;height:100%;min-height:0}
-@media (max-width:1000px){.app{grid-template-columns:280px minmax(0,1fr)}.right{display:none}.right.open{display:flex;position:fixed;inset:0;z-index:20}}
-@media (max-width:700px){.app{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.left{max-height:45vh}}
-.left,.right{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0;overflow:auto}
-.right{border-right:0;border-left:1px solid var(--border)}
-.brand{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border)}
-.brand h1{font-size:17px;font-weight:700;margin:0;letter-spacing:-.01em}
-.brand .sub{font-size:12px;color:var(--muted)}
-.sec{padding:14px 18px;border-bottom:1px solid var(--border);display:grid;gap:10px}
-.sec h2{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0;display:flex;justify-content:space-between;align-items:center}
-.drop{border:1.5px dashed var(--border);border-radius:12px;padding:16px;text-align:center;font-size:13px;color:var(--muted);cursor:pointer;background:var(--surface-2)}
-.drop.over{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
-.drop b{color:var(--text)}
-.doclist{display:grid;gap:6px}
-.doc{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--surface-2)}
-.doc .ic{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-size:10px;font-weight:700;font-family:var(--mono);background:var(--accent-soft);color:var(--accent)}
-.doc .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-.doc .m{font-size:11px;color:var(--muted);font-family:var(--mono)}
-.doc button{border:0;background:none;color:var(--muted);padding:4px;border-radius:6px}
-.doc button:hover{color:var(--bad);background:var(--bad-soft)}
-.doc.err .ic{background:var(--bad-soft);color:var(--bad)}
-.field{display:grid;gap:4px;font-size:13px}
-.field label{font-weight:500}
-.field input,.field select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);color:var(--text);font-size:13px}
-.field input:focus,.field select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.field .hint{font-size:11.5px;color:var(--muted)}
-.row{display:flex;gap:8px;align-items:center}
-.btn{padding:8px 12px;border-radius:9px;border:1px solid var(--border);background:var(--surface);font-size:13px;font-weight:600}
-.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
-.btn.small{padding:5px 9px;font-size:12px}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:999px}
-.pill.good{background:var(--good-soft);color:var(--good)}
-.pill.warn{background:var(--warn-soft);color:var(--warn)}
-.pill.bad{background:var(--bad-soft);color:var(--bad)}
-.pill.acc{background:var(--accent-soft);color:var(--accent)}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px}
-.stats div{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:7px 9px}
-.stats .k{color:var(--muted);font-size:11px}
-.stats .v{font-family:var(--mono);font-size:13px;font-weight:500}
-/* chat */
-.main{display:flex;flex-direction:column;min-height:0;min-width:0}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px max(18px,env(safe-area-inset-right,0px)) 12px max(18px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--border);background:var(--surface);font-size:13px}
-.topbar .status{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.chat{flex:1;overflow:auto;padding:20px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
-.msg{max-width:760px;width:100%;margin:0 auto;display:grid;gap:8px}
-.msg.user{justify-items:end}
-.bubble{padding:12px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--border);max-width:100%;overflow-wrap:anywhere}
-.msg.user .bubble{background:var(--user-bubble);color:var(--user-fg);border-color:transparent;border-bottom-right-radius:4px}
-.msg.bot .bubble{border-bottom-left-radius:4px}
-.bubble p{margin:0 0 8px}.bubble p:last-child{margin:0}
-.bubble .cit{display:inline-block;font-family:var(--mono);font-size:11px;padding:0 5px;border-radius:5px;background:var(--accent-soft);color:var(--accent);cursor:pointer;vertical-align:1px}
-.srcs{display:flex;flex-wrap:wrap;gap:6px}
-.src{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--accent);cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.meta{font-size:11.5px;color:var(--muted);font-family:var(--mono)}
-.welcome{max-width:760px;margin:30px auto;display:grid;gap:18px}
-.welcome h2{margin:0;font-size:24px;letter-spacing:-.01em;text-wrap:balance}
-.welcome p{margin:0;color:var(--muted);max-width:60ch}
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
-.step{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;display:grid;gap:6px;font-size:13.5px}
-.step .n{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.step b{font-weight:600}
-.step.done{border-color:var(--good);background:var(--good-soft)}
-.composer{padding:10px max(18px,env(safe-area-inset-right,0px)) max(14px,env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));background:var(--surface);border-top:1px solid var(--border)}
-.composer form{max-width:760px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}
-.composer textarea{flex:1;min-width:0;resize:none;min-height:44px;max-height:160px;padding:11px 14px;border:1px solid var(--border);border-radius:14px;background:var(--surface-2);line-height:1.4}
-.composer .note{max-width:760px;margin:6px auto 0;font-size:11.5px;color:var(--muted);text-align:center}
-.typing{display:inline-flex;gap:4px}.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:b 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
-@keyframes b{0%,80%,100%{opacity:.3}40%{opacity:1}}
-@media (prefers-reduced-motion:reduce){.typing i{animation:none}}
-/* right panel */
-.tabs{display:flex;border-bottom:1px solid var(--border)}
-.tabs button{flex:1;padding:12px;border:0;background:none;font-size:13px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent}
-.tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
-.panel{padding:16px 18px;display:none;gap:14px;font-size:13.5px;overflow:auto}
-.panel.on{display:grid}
-.panel h3{margin:0;font-size:14px}
-.panel p{margin:0;color:var(--muted)}
-.fmt{display:grid;gap:8px}
-.fmt>div{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2)}
-.fmt .tag{font-family:var(--mono);font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap}
-.fmt .t{font-size:13px}.fmt .t b{font-weight:600}.fmt .t span{color:var(--muted);display:block;font-size:12px;margin-top:2px}
-.srcview{display:grid;gap:10px}
-.srcview .c{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--surface-2);font-size:13px;display:grid;gap:4px}
-.srcview .c .h{font-weight:600;display:flex;justify-content:space-between;gap:8px}
-.srcview .c .h span{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400}
-.srcview .c .t{color:var(--muted);font-size:12.5px;white-space:pre-wrap;max-height:180px;overflow:auto}
-.srcview mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 2px}
-.toast{position:fixed;bottom:max(16px,env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:13px;z-index:50;max-width:90vw}
-.closebtn{display:none}
-@media (max-width:1000px){.closebtn{display:inline-block}}
-details summary{cursor:pointer;font-size:12.5px;color:var(--muted)}
-.progress{height:4px;border-radius:2px;background:var(--border);overflow:hidden}.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+@media (max-width:640px){
+  .grid{grid-template-columns:1fr}
+  .nav .wrap{height:68px}
+  .nav-links{top:68px}
+  .brand{font-size:20px}
+  .panel-top{grid-template-columns:1fr}
+  .pane+.pane{border-left:0;border-top:1px solid var(--line-dark)}
+  .avatar{aspect-ratio:4/3}
+  .exp-head{grid-template-columns:44px 1fr auto;gap:14px;padding:24px 0}
+  .exp-logo{width:44px;height:44px;border-radius:11px}
+  .exp-period{grid-column:1/-1;order:-1;margin-bottom:-4px}
+  .exp-summary{font-size:17px}
+  .tv-row{grid-template-columns:84px 1fr}
+  .logos{justify-content:flex-start}
+  .btn,.link-u{font-size:16px}
+  .panel-bar{flex-direction:column;align-items:flex-start}
+}
 </style>
 </head>
 <body>
-<div class="app">
+<noscript><div style="position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#0b1433;color:#eef1ff;font:16px system-ui;padding:24px;text-align:center">This portfolio needs JavaScript. Open it in a normal browser tab.</div></noscript>
 
-<!-- LEFT: documents + settings -->
-<aside class="left">
-  <div class="brand"><div><h1>DocChat</h1><div class="sub">Your documents, your AI key, cited answers</div></div></div>
-
-  <div class="sec">
-    <h2>Documents <span id="doccount" class="pill acc">0</span></h2>
-    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Upload documents"><b>Drop files here</b> or click to choose<br><span class="mono">.pdf .docx .md .txt .csv</span></div>
-    <input type="file" id="file" multiple accept=".pdf,.docx,.md,.markdown,.txt,.csv,application/pdf" hidden>
-    <div class="progress" id="prog" hidden><i></i></div>
-    <div class="doclist" id="doclist"></div>
-    <div class="stats">
-      <div><div class="k">Chunks indexed</div><div class="v" id="s-chunks">0</div></div>
-      <div><div class="k">Embedded</div><div class="v" id="s-emb">0</div></div>
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <a href="#top" class="brand"><span class="brand-mark" id="brandMark">AT</span><span id="brandName"></span></a>
+    <div class="nav-links" id="navLinks">
+      <a href="#experience">Experience</a>
+      <a href="#case-studies">Case Studies</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+      <a class="btn" id="resumeBtn" href="#" target="_blank" rel="noopener">Resume <span class="arrow">↗</span></a>
     </div>
-    <div class="row">
-      <button class="btn small" id="embedall" title="Embed every chunk that isn't yet">Embed all</button>
-      <button class="btn small" id="exportidx">Export index</button>
-      <button class="btn small" id="clearall">Clear all</button>
-    </div>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span></button>
   </div>
+</nav>
 
-  <div class="sec">
-    <h2>Answering model</h2>
-    <div class="field"><label for="provider">Provider</label>
-      <select id="provider">
-        <option value="openai">OpenAI</option>
-        <option value="anthropic">Anthropic (Claude)</option>
-        <option value="gemini">Google Gemini</option>
-        <option value="none">No model (quote the best passage)</option>
-      </select></div>
-    <div class="field" id="f-key"><label for="apikey">API key</label><input id="apikey" type="password" autocomplete="off" placeholder="sk-…"><div class="hint">Stored only in this browser (localStorage). Sent only to the provider you chose.</div></div>
-    <div class="field" id="f-model"><label for="model">Model</label><input id="model" placeholder="model name"><div class="hint" id="modelhint"></div></div>
-    <div class="row"><button class="btn small" id="testkey">Test connection</button><span id="keystatus" class="meta"></span></div>
-  </div>
-
-  <div class="sec">
-    <h2>Embeddings <span class="pill warn" id="embpill">off</span></h2>
-    <div class="field"><label for="embprov">Provider</label>
-      <select id="embprov">
-        <option value="none">None (keyword search only)</option>
-        <option value="openai">OpenAI text-embedding-3-small</option>
-        <option value="gemini">Gemini gemini-embedding-001</option>
-      </select>
-      <div class="hint">Embeddings let the search understand meaning ("standing desk" finds "ergonomic equipment"). Keyword-only works but can't refuse off-topic questions reliably.</div></div>
-    <div class="field" id="f-embkey"><label for="embkey">API key for embeddings</label><input id="embkey" type="password" autocomplete="off" placeholder="same as above if same provider"></div>
-    <details><summary>Advanced: retrieval settings</summary>
-      <div class="field" style="margin-top:8px"><label for="topk">Passages sent to the model: <span id="topk-v">5</span></label><input id="topk" type="range" min="2" max="10" value="5"></div>
-      <div class="field"><label for="gate">"I don't know" threshold: <span id="gate-v">auto</span></label><input id="gate" type="range" min="0" max="100" value="0"><div class="hint">0 = auto. Higher refuses more. Watch the confidence number under each answer to tune.</div></div>
-    </details>
-  </div>
-  <div class="sec" style="border-bottom:0;font-size:12px;color:var(--muted)">Nothing leaves your browser except API calls to the provider you pick. Documents and the index live in this browser's storage; export them to keep a copy.</div>
-</aside>
-
-<!-- CENTER: chat -->
-<main class="main">
-  <div class="topbar">
-    <div class="status" id="status"></div>
-    <div class="row"><button class="btn small" id="newchat">New chat</button><button class="btn small" id="openright">Guide</button></div>
-  </div>
-  <div class="chat" id="chat">
-    <div class="welcome" id="welcome">
-      <h2>Ask questions about your own documents, with the answer's source attached.</h2>
-      <p>Three things to do, in any order. Everything runs here in your browser; your files and keys never go to a server of ours.</p>
-      <div class="steps">
-        <div class="step" id="st1"><div class="n">1</div><b>Upload documents</b><span>PDF, Word, Markdown or text. Word and Markdown with headings give the best results; see the guide.</span></div>
-        <div class="step" id="st2"><div class="n">2</div><b>Add an API key</b><span>OpenAI, Anthropic or Gemini. The key stays in this browser. Or pick "No model" to see retrieval only.</span></div>
-        <div class="step" id="st3"><div class="n">3</div><b>Ask</b><span>Every answer cites the passage it came from. If your documents don't cover it, it says so instead of guessing.</span></div>
+<header class="dark" id="top">
+  <div class="wrap hero">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow mono" id="eyebrow"></div>
+        <h1><span id="headline"></span><em id="headlineItalic"></em></h1>
+        <p class="lead" id="intro"></p>
+        <div class="hero-cta">
+          <a class="btn" id="cta1" href="#experience"><span></span> <span class="arrow">↗</span></a>
+          <a class="link-u" id="cta2" href="#contact"><span></span> <span class="arrow">↗</span></a>
+        </div>
+        <div class="status" id="status" hidden><i></i><span></span></div>
       </div>
-      <p id="sampleline">Want to see it work first? <a href="#" id="loadsample">Load a sample handbook</a> (a fictional 14-page company policy set).</p>
-    </div>
-  </div>
-  <div class="composer">
-    <form id="askform">
-      <textarea id="q" rows="1" placeholder="Ask something about your documents…" aria-label="Question"></textarea>
-      <button class="btn primary" id="askbtn" type="submit">Ask</button>
-    </form>
-    <div class="note" id="note"></div>
-  </div>
-</main>
 
-<!-- RIGHT: guide / sources -->
-<aside class="right" id="right">
-  <div class="tabs"><button class="on" data-tab="guide">Format guide</button><button data-tab="sources">Sources</button><button data-tab="how">How it works</button><button class="closebtn" id="closeright" aria-label="Close">✕</button></div>
-  <div class="panel on" id="p-guide">
-    <h3>What to upload</h3>
-    <p>The bot answers from passages, so it works best when your documents already have clear sections. Here is what each format gives you.</p>
-    <div class="fmt">
-      <div><span class="tag" style="background:var(--good-soft);color:var(--good)">BEST</span><div class="t"><b>Markdown (.md) or Word (.docx) with real headings</b><span>Headings become section labels and citation targets. Use Word's Heading 1/2/3 styles, not bold text. One topic per file.</span></div></div>
-      <div><span class="tag" style="background:var(--good-soft);color:var(--good)">GOOD</span><div class="t"><b>Text-based PDF</b><span>Exported from Word, Google Docs or a wiki. Text is extracted per page; citations point to the page. Headings aren't recognised, so long pages are split by size.</span></div></div>
-      <div><span class="tag" style="background:var(--warn-soft);color:var(--warn)">OK</span><div class="t"><b>Plain text (.txt), CSV</b><span>Indexed as paragraphs / rows. Fine for FAQs and lists. Add a first line with a title.</span></div></div>
-      <div><span class="tag" style="background:var(--bad-soft);color:var(--bad)">NO</span><div class="t"><b>Scanned PDFs, images, slides with pictures of text</b><span>There is no text to extract. Run OCR first (Adobe, macOS Preview, or <code>ocrmypdf</code>) and upload the result. A PDF that indexes to 0 chunks is almost always a scan.</span></div></div>
-      <div><span class="tag" style="background:var(--bad-soft);color:var(--bad)">NO</span><div class="t"><b>Spreadsheets (.xlsx), Google Docs links</b><span>Export the sheet as CSV, and the Doc as .docx or Markdown, then upload.</span></div></div>
     </div>
-    <h3>Tips that make answers better</h3>
-    <p>Put the document's title on the first line. Keep sections under about 300 words; split long ones with sub-headings. Spell out acronyms once. Remove anything you wouldn't want quoted back: the bot can repeat any passage it indexes. Files over ~20 MB will be slow in the browser; split them.</p>
-    <h3>Privacy</h3>
-    <p>Files are parsed and indexed in this browser tab and stored in its local storage. The only network calls are to the AI provider you configured, carrying your question and the matching passages. Clearing site data removes everything.</p>
+
+    <div class="strip">
+      <div class="strip-label">Where I've <b>built things.</b></div>
+      <div class="logos" id="logos"></div>
+    </div>
+    <div class="scroll-hint">Explore my work ↓</div>
   </div>
-  <div class="panel" id="p-sources"><h3>Sources for the last answer</h3><div class="srcview" id="srcview"><p>Ask something and the passages used will appear here, with the matching words highlighted.</p></div></div>
-  <div class="panel" id="p-how">
-    <h3>What happens to a question</h3>
-    <p>1. Your documents were split into passages of about 300 words at their headings when you uploaded them.</p>
-    <p>2. The question is matched against every passage two ways: by keywords (BM25, like a classic search engine) and, if embeddings are on, by meaning (cosine similarity between vectors). The two rankings are merged.</p>
-    <p>3. If the best match is weak, you get "I couldn't find that" and no model is called. That threshold is the slider in Advanced settings.</p>
-    <p>4. Otherwise the top passages and your question go to the model with instructions to answer only from them and cite with [n]. The cited passages are shown under the answer.</p>
-    <h3>Costs</h3>
-    <p>Per question, roughly 2,000 tokens in and 250 out: about $0.0003 on Gemini Flash-Lite, $0.001 on GPT-5 mini, $0.003 on Claude Haiku 4.5. Embedding a 100-page document once costs under a cent with OpenAI.</p>
-    <h3>Follow-up questions</h3>
-    <p>The last two exchanges are sent along, so "and for contractors?" works. Start a new chat to reset.</p>
-  </div>
-</aside>
-</div>
+</header>
+
+<main>
+  <section class="block" id="experience">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div>
+          <!-- <div class="eyebrow mono">01 / Experience</div> -->
+          <h2>The work, <em>in depth.</em></h2>
+        </div>
+        <!-- <p>Click any role for the full story — what I owned, what I shipped and what moved.</p> -->
+      </div>
+      <div class="exp-list" id="expList"></div>
+    </div>
+  </section>
+
+  <section class="block dark" id="case-studies">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div>
+          <!-- <div class="eyebrow mono">02 / Case Studies</div> -->
+          <h2>Problems, <em>solved.</em></h2>
+        </div>
+        <!-- <p>Selected deep dives into how I approach a problem — from first question to final outcome.</p> -->
+      </div>
+      <div class="cases" id="cases"></div>
+    </div>
+  </section>
+
+  <section class="block" id="projects">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div>
+          <!-- <div class="eyebrow mono">03 / Personal Projects</div> -->
+          <h2>Things I make <em>for fun.</em></h2>
+        </div>
+        <span class="count" id="projCount"></span>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section class="dark contact" id="contact">
+    <div class="wrap">
+      <!-- <div class="eyebrow mono">04 / Contact</div> -->
+      <h2 style="margin-top:22px"><span id="cHead"></span><em id="cHeadI"></em></h2>
+      <p id="cText"></p>
+      <div class="hero-cta"><a class="btn" id="mailBtn" href="#">Say hello <span class="arrow">↗</span></a></div>
+      <div class="socials" id="socials"></div>
+      <footer><span id="foot1"></span><span>Designed &amp; built with care</span></footer>
+    </div>
+  </section>
+</main>
 
 <script>
 (() => {
-'use strict';
-// ------------------------------------------------------------ utilities
+/* ---------------- Helpers ---------------- */
 const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const toast = (m, ms=2600) => { const t=document.createElement('div'); t.className='toast'; t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(), ms); };
-const LS = { get:(k,d)=>{ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} }, set:(k,v)=>{ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
-if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const lines = s => Array.isArray(s) ? s.filter(Boolean) : String(s || "").split(/\r?\n|\s*;\s*/).map(x => x.trim()).filter(Boolean);
+const list = s => Array.isArray(s) ? s.filter(Boolean) : String(s || "").split(",").map(x => x.trim()).filter(Boolean);
+const metrics = s => Array.isArray(s) && typeof s[0] === "object" ? s.map(m => ({ v: m.value ?? "", l: m.label ?? "" })) : lines(s).map(l => { const [v, ...r] = l.split("|"); return { v: v.trim(), l: r.join("|").trim() }; });
+const initials = s => String(s || "").split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+const isExternal = u => /^https?:|^mailto:/i.test(u || "");
+const tgt = u => isExternal(u) && !/^mailto:/i.test(u) ? ' target="_blank" rel="noopener"' : "";
 
-// ------------------------------------------------------------ IndexedDB (documents + chunks persist per browser)
-const DB = (() => {
-  let db;
-  const open = () => new Promise((res, rej) => { const r = indexedDB.open('docchat', 1);
-    r.onupgradeneeded = () => { r.result.createObjectStore('docs', {keyPath:'id'}); };
-    r.onsuccess = () => { db = r.result; res(db); }; r.onerror = () => rej(r.error); });
-  const tx = (mode) => db.transaction('docs', mode).objectStore('docs');
-  return {
-    open,
-    all: () => new Promise((res, rej) => { const r = tx('readonly').getAll(); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }),
-    put: d => new Promise((res, rej) => { const r = tx('readwrite').put(d); r.onsuccess=res; r.onerror=()=>rej(r.error); }),
-    del: id => new Promise((res, rej) => { const r = tx('readwrite').delete(id); r.onsuccess=res; r.onerror=()=>rej(r.error); }),
-    clear: () => new Promise((res, rej) => { const r = tx('readwrite').clear(); r.onsuccess=res; r.onerror=()=>rej(r.error); }),
-  };
-})();
-
-// ------------------------------------------------------------ state
-let docs = [];            // [{id,name,kind,addedAt,chunks:[{id,doc,section,text,vec?}],error?}]
-let history = [];         // [{q,a}] last exchanges for follow-ups
-let lastHits = [];
-const settings = LS.get('docchat.settings', {provider:'openai', keys:{}, models:{}, embprov:'none', embkeys:{}, topk:5, gate:0});
-const DEFAULT_MODELS = {openai:'gpt-5-mini', anthropic:'claude-haiku-4-5', gemini:'gemini-2.5-flash-lite'};
-const MODEL_HINTS = {openai:'Cheap and good: gpt-5-mini. Also gpt-5-nano, gpt-4.1-mini.', anthropic:'claude-haiku-4-5 is the cheap one; claude-sonnet-4-5 for harder questions.', gemini:'gemini-2.5-flash-lite is the cheapest; gemini-2.5-flash is better at long passages.', none:''};
-
-// ------------------------------------------------------------ text processing
-const STOP = new Set("a an the and or of to in on for is are was were be do does did i my me we our you your can could should would will what when where how much many get have has it its this that with from as at by about into if there any who whom whose which why may might need want know think please tell help also just still".split(' '));
-const stem = w => w.length > 5 ? w.replace(/(ing|edly|ed|es|s|ly)$/, '') : w.replace(/(es|s)$/, '');
-const tokenize = s => (s.toLowerCase().replace(/[\u2019'`]/g, '').match(/[a-z0-9][a-z0-9\-']*/g) || []).filter(w => !STOP.has(w) && w.length > 1 && w.length <= 25).map(stem);
-
-function chunkSections(sections, docName, maxWords=300, overlap=40) {
-  // sections: [{section, text}] -> chunks with doc›section prefix; long sections split with overlap
-  const out = []; let carry = null;
-  sections.forEach(({section, text}) => {
-    let body = text.replace(/\s+\n/g, '\n').trim();
-    if (!body) return;
-    if (carry) { body = carry + '\n\n' + body; carry = null; }
-    const words = body.split(/\s+/);
-    if (words.length < 12) { carry = `${section}: ${body}`; return; }
-    const step = maxWords - overlap;
-    for (let i = 0; i < words.length; i += step) {
-      const piece = words.slice(i, i + maxWords).join(' ').slice(0, 2500);
-      out.push({section, text: `${docName} › ${section}\n${piece}`});
-      if (words.length <= maxWords) break;
-    }
-  });
-  if (carry && out.length) out[out.length-1].text += '\n' + carry;
-  return out;
+/* Convert Google Drive share links into embeddable image URLs */
+function img(url) {
+  url = String(url || "").trim();
+  if (!url) return "";
+  const m = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/) || url.match(/[?&]id=([\w-]{20,})/);
+  if (m && /google/.test(url)) return `https://lh3.googleusercontent.com/d/${m[1]}=w1600`;
+  return url;
+}
+function imgTag(url, alt, label) {
+  const u = img(url);
+  const ph = `<div class="ph">${esc(initials(label || alt))}</div>`;
+  if (!u) return ph;
+  return `<img src="${esc(u)}" alt="${esc(alt)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='${ph.replace(/'/g, "\\'").replace(/"/g, "&quot;")}'">`;
 }
 
-// Word exports via mammoth carry embedded images as base64, escaped punctuation, anchors and bold-as-heading lines.
-function cleanDocxMarkdown(md) {
-  let t = md.replace(/\r/g, '');
-  t = t.replace(/!\[[^\]]*\]\([^)]*\)/g, '');            // images (including data: URIs)
-  t = t.replace(/\[\s*\]\([^)]*\)/g, '');               // empty links
-  t = t.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1');         // links -> their text
-  t = t.replace(/\]\([^)]*\)/g, '');                      // stray link tails
-  t = t.replace(/data:[a-z]+\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g, '');
-  t = t.replace(/<[^>]+>/g, '');                           // html tags / anchors
-  t = t.replace(/\\([.\-*_#()\[\]!+|>~`])/g, '$1');         // mammoth escapes
-  t = t.replace(/(?:__|\*\*)\s*([^_*\n]{3,90}?)\s*\n(?:__|\*\*)\s*$/gm, '\n## $1');   // bold heading split over two lines
-  t = t.replace(/^\s*(?:__|\*\*)\s*([^_*\n]{3,90}?)\s*(?:__|\*\*)\s*$/gm, '## $1');      // bold-only line = heading
-  t = t.replace(/(?:__|\*\*)\s*\n\s*([^_*\n]{3,90}?)\s*(?:__|\*\*)\s*$/gm, '\n## $1');   // bold opening on the line before
-  t = t.replace(/([^\n])[ \t]*#{2,}[ \t]*/g, '$1 ');          // heading marks that landed mid-line
-  t = t.replace(/^[\s_*]+$/gm, '');                        // lines of underscores/asterisks
-  t = t.replace(/(__|\*\*)/g, '');                          // remaining bold markers
-  t = t.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
-  return t.trim();
+const visible = arr => (arr || []).filter(r => r && r.show !== false);
+
+/* ---------------- Date helpers for timeline viz ---------------- */
+const MONTHS = "jan feb mar apr may jun jul aug sep oct nov dec".split(" ");
+function toNum(s) {
+  s = String(s || "").trim().toLowerCase();
+  if (!s || /present|now|current|today/.test(s)) { const d = new Date(); return d.getFullYear() + d.getMonth() / 12; }
+  const y = (s.match(/(19|20)\d{2}/) || [])[0]; if (!y) return null;
+  const mi = MONTHS.findIndex(m => s.includes(m)); const mm = s.match(/^(\d{1,2})[\/\-.]/);
+  return +y + ((mi >= 0 ? mi : mm ? +mm[1] - 1 : 0) / 12);
 }
 
-function sectionsFromMarkdown(md, fallbackTitle) {
-  const parts = md.replace(/\r/g,'').split(/\n(?=#{1,3} )/);
-  const secs = []; let title = fallbackTitle;
-  parts.forEach(p => {
-    const lines = p.split('\n'); const h = lines[0].match(/^(#{1,3})\s+(.*)/);
-    if (h) { const heading = h[2].trim(); const body = lines.slice(1).join('\n').trim();
-      if (h[1] === '#' && !secs.length && !body) { title = heading; return; }
-      secs.push({section: heading, text: body}); }
-    else if (p.trim()) { const t = p.trim();
-      if (!secs.length && t.length < 80 && !t.includes('\n')) { title = t; return; }  // a lone first line is the title
-      if (!secs.length) { const first = t.split('\n')[0].trim(); const rest = t.split('\n').slice(1).join('\n').trim();
-        if (first.length < 80 && !/[.:;,]$/.test(first) && rest) { title = first; secs.push({section: 'Introduction', text: rest}); return; } }
-      secs.push({section: secs.length ? 'Continued' : 'Introduction', text: t}); }
-  });
-  return {title, secs};
+/* ---------------- Render ---------------- */
+function render(d) {
+  const p = d.profile || {};
+  const exp = visible(d.experience || []), cases = visible(d.cases || []), projs = visible(d.projects || []), socials = visible(d.socials || []);
+  const name = p.name || "Your Name";
+
+  document.title = `${name}${p.role ? " — " + p.role : ""}`;
+  $("brandName").textContent = name;
+  if (p.logo_url) $("brandMark").innerHTML = `<img src="${esc(img(p.logo_url))}" alt="">`; else $("brandMark").textContent = initials(name);
+  $("eyebrow").textContent = p.eyebrow || "Portfolio";
+  $("headline").textContent = p.headline || "";
+  $("headlineItalic").textContent = p.headline_italic || "";
+  $("intro").textContent = p.intro || "";
+  [["cta1", p.primary_cta_label || "View my work", p.primary_cta_link || "#experience"], ["cta2", p.secondary_cta_label || "Get in touch", p.secondary_cta_link || "#contact"]]
+    .forEach(([id, l, h]) => { const a = $(id); a.firstElementChild.textContent = l; a.href = h; if (isExternal(h)) { a.target = "_blank"; a.rel = "noopener"; } });
+  if (p.status) { $("status").hidden = false; $("status").lastElementChild.textContent = p.status + (p.location ? " · " + p.location : ""); }
+  const rb = $("resumeBtn"); if (p.resume_url) rb.href = p.resume_url; else rb.remove();
+
+  // Logo strip
+  const seen = new Set();
+  $("logos").innerHTML = exp.filter(e => e.company && !seen.has(e.company) && seen.add(e.company)).map(e => {
+    const inner = e.logo_url ? `<img src="${esc(img(e.logo_url))}" alt="${esc(e.company)}" referrerpolicy="no-referrer" onerror="this.remove()">${esc(e.company)}` : esc(e.company);
+    return e.company_url ? `<a href="${esc(e.company_url)}" target="_blank" rel="noopener">${inner}</a>` : `<div>${inner}</div>`;
+  }).join("");
+
+  // Experience
+  $("expList").innerHTML = exp.map((e, i) => {
+    const hl = lines(e.highlights), mt = metrics(e.metrics), sk = list(e.skills);
+    const logo = e.logo_url ? `<img src="${esc(img(e.logo_url))}" alt="" referrerpolicy="no-referrer" onerror="this.parentElement.textContent='${esc(initials(e.company))}'">` : esc(initials(e.company));
+    return `<article class="exp${i === 0 ? " open" : ""}">
+      <button class="exp-head" aria-expanded="${i === 0}">
+        <span class="exp-period">${esc(e.start)}${e.end ? " — " + esc(e.end) : ""}</span>
+        <span class="exp-logo">${logo}</span>
+        <span><div class="exp-title">${esc(e.role)}<span class="at">at</span>${esc(e.company)}</div>
+        <div class="exp-meta">${[e.type, e.location].filter(Boolean).map(esc).join(" · ")}</div></span>
+        <span class="toggle" aria-hidden="true"></span>
+      </button>
+      <div class="exp-body"><div><div class="exp-inner"><div class="spacer"></div>
+        <div class="exp-content">
+          <div>
+            ${e.summary ? `<p class="exp-summary">${esc(e.summary)}</p>` : ""}
+            ${hl.length ? `<ul class="hl">${hl.map(h => `<li>${esc(h)}</li>`).join("")}</ul>` : ""}
+          </div>
+          <div>
+            ${mt.length ? `<div class="metrics">${mt.map(m => `<div class="metric"><b>${esc(m.v)}</b><span>${esc(m.l)}</span></div>`).join("")}</div>` : ""}
+            ${sk.length ? `<div class="skills">${sk.map(s => `<span>${esc(s)}</span>`).join("")}</div>` : ""}
+            ${e.company_url ? `<a class="exp-link" href="${esc(e.company_url)}" target="_blank" rel="noopener">Visit ${esc(e.company)} ↗</a>` : ""}
+          </div>
+        </div>
+      </div></div></div>
+    </article>`;
+  }).join("");
+  $("expList").querySelectorAll(".exp-head").forEach(b => b.addEventListener("click", () => {
+    const a = b.parentElement, open = a.classList.toggle("open"); b.setAttribute("aria-expanded", open);
+  }));
+
+  // Case studies
+  const cs = $("case-studies");
+  if (!cases.length) cs.remove();
+  else $("cases").innerHTML = cases.map(c => {
+    const mt = metrics(c.metrics).slice(0, 3), href = c.link || "#";
+    const pao = [["Problem", c.problem], ["Approach", c.approach], ["Outcome", c.outcome]].filter(x => x[1]);
+    return `<a class="case reveal" href="${esc(href)}" target="_blank" rel="noopener">
+      <div class="case-media">${imgTag(c.banner_url, c.title, c.title)}</div>
+      <div class="case-body">
+        <div class="case-kicker">${[c.category, c.client, c.year].filter(Boolean).map(x => `<span>${esc(x)}</span>`).join("")}</div>
+        <h3>${esc(c.title)}</h3>
+        ${c.summary ? `<p class="summary">${esc(c.summary)}</p>` : ""}
+        ${pao.length ? `<div class="pao">${pao.map(([h, t]) => `<div><h4>${h}</h4><p>${esc(t)}</p></div>`).join("")}</div>` : ""}
+        <div class="case-foot">
+          <div class="case-metrics">${mt.map(m => `<div><b>${esc(m.v)}</b><span>${esc(m.l)}</span></div>`).join("")}</div>
+          <span class="link-u">Read case study <span class="arrow">↗</span></span>
+        </div>
+      </div></a>`;
+  }).join("");
+
+  // Projects (auto-appends as rows are added)
+  $("projCount").textContent = projs.length ? `${String(projs.length).padStart(2, "0")} projects` : "";
+  if (!projs.length) $("projects").remove();
+  else $("grid").innerHTML = projs.map(pj => {
+    const href = pj.link || "#", tags = list(pj.tags);
+    return `<a class="proj reveal" href="${esc(href)}" target="_blank" rel="noopener">
+      <div class="proj-img">${imgTag(pj.banner_url, pj.title, pj.title)}</div>
+      <div class="proj-body">
+        <div class="proj-top"><span>${esc(tags.slice(0, 2).join(" · "))}</span><span>${esc(pj.year || "")}</span></div>
+        <h3>${esc(pj.title)}</h3>
+        <p>${esc(pj.description)}</p>
+        <div class="proj-foot"><span>View project</span><span class="arrow">↗</span></div>
+      </div></a>`;
+  }).join("");
+
+  // Contact
+  $("cHead").textContent = p.contact_heading || "Let's talk";
+  $("cHeadI").textContent = p.contact_heading_italic || "";
+  $("cText").textContent = p.contact_text || "";
+  if (p.email) $("mailBtn").href = "mailto:" + p.email; else $("mailBtn").remove();
+  $("socials").innerHTML = socials.filter(s => s.url).map(s => `<a href="${esc(s.url)}"${tgt(s.url)}>${esc(s.label || s.url)} ↗</a>`).join("");
+  $("foot1").textContent = `© ${new Date().getFullYear()} ${name}`;
+
+  // Reveal on scroll
+  const io = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting) { x.target.classList.add("in"); io.unobserve(x.target); } }), { threshold: .08 }) : null;
+  document.querySelectorAll(".reveal").forEach((el, i) => { el.style.transitionDelay = (i % 4) * 60 + "ms"; io ? io.observe(el) : el.classList.add("in"); });
 }
 
-function sectionsFromPlain(txt, name) {
-  // paragraphs grouped into ~300-word sections labelled by their first line
-  const paras = txt.replace(/\r/g,'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
-  const secs = []; let buf = [], n = 0;
-  const flush = () => { if (!buf.length) return; const label = buf[0].split('\n')[0].slice(0, 60); secs.push({section: label, text: buf.join('\n\n')}); buf = []; n = 0; };
-  paras.forEach(p => { const w = p.split(/\s+/).length; if (n + w > 300 && buf.length) flush(); buf.push(p); n += w; });
-  flush();
-  return {title: name, secs};
-}
+/* Mobile menu */
+const nav = $("nav"), burger = $("burger");
+burger.addEventListener("click", () => { const o = nav.classList.toggle("open"); burger.setAttribute("aria-expanded", o); });
+$("navLinks").addEventListener("click", e => { if (e.target.closest("a")) nav.classList.remove("open"); });
 
-async function parsePdf(buf) {
-  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
-  const secs = []; let title = null;
-  for (let p = 1; p <= pdf.numPages; p++) {
-    const page = await pdf.getPage(p); const tc = await page.getTextContent();
-    let lastY = null, text = '';
-    tc.items.forEach(it => { if (!it.str) return; const y = it.transform[5];
-      if (lastY !== null && Math.abs(y - lastY) > 2) text += (Math.abs(y - lastY) > 14 ? '\n\n' : '\n'); else if (text && !text.endsWith(' ')) text += ' ';
-      text += it.str; lastY = y; });
-    text = text.replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
-    if (!title && text) title = text.split('\n')[0].slice(0, 80);
-    if (text) { const ws = text.split(/\s+/); if (ws.length <= 320) secs.push({section:`Page ${p}`, text});
-      else { const sub = sectionsFromPlain(text, '').secs; sub.forEach((s, i) => secs.push({section:`Page ${p}${sub.length>1?' ('+(i+1)+')':''}`, text:s.text})); } }
-  }
-  return {title, secs, pages: pdf.numPages};
-}
-
-async function parseFile(file) {
-  const name = file.name.replace(/\.[^.]+$/, ''); const ext = (file.name.split('.').pop()||'').toLowerCase();
-  if (ext === 'pdf') { const r = await parsePdf(await file.arrayBuffer()); return {kind:'pdf', title: r.title || name, secs: r.secs, note: `${r.pages} pages`}; }
-  if (ext === 'docx') { const r = await mammoth.convertToMarkdown({arrayBuffer: await file.arrayBuffer()}, {convertImage: mammoth.images.imgElement(() => Promise.resolve({src: ''}))}); const m = sectionsFromMarkdown(cleanDocxMarkdown(r.value), name); return {kind:'docx', title:m.title, secs:m.secs}; }
-  const txt = await file.text();
-  if (ext === 'md' || ext === 'markdown') { const m = sectionsFromMarkdown(txt, name); return {kind:'md', title:m.title, secs:m.secs}; }
-  if (ext === 'csv') { const rows = txt.replace(/\r/g,'').split('\n').filter(Boolean); const header = rows[0]; const secs = [];
-    for (let i = 1; i < rows.length; i += 20) secs.push({section:`Rows ${i}–${Math.min(i+19, rows.length-1)}`, text: header + '\n' + rows.slice(i, i+20).join('\n')});
-    return {kind:'csv', title:name, secs}; }
-  const m = sectionsFromPlain(txt, name); return {kind:'txt', title:m.title, secs:m.secs};
-}
-
-// ------------------------------------------------------------ index (BM25 over all chunks, rebuilt when docs change)
-let INDEX = {chunks:[], df:{}, avgdl:1};
-function rebuildIndex() {
-  const chunks = []; docs.forEach(d => (d.chunks||[]).forEach(c => chunks.push(c)));
-  const df = {}; let total = 0;
-  chunks.forEach(c => { const toks = tokenize(c.text); c.tf = {}; c.len = toks.length; total += toks.length; toks.forEach(t => c.tf[t] = (c.tf[t]||0)+1); Object.keys(c.tf).forEach(t => df[t] = (df[t]||0)+1); });
-  INDEX = {chunks, df, avgdl: total / Math.max(chunks.length, 1)};
-  $('s-chunks').textContent = chunks.length; $('s-emb').textContent = chunks.filter(c=>c.vec).length;
-  $('doccount').textContent = docs.length; renderStatus();
-}
-function bm25(terms) {
-  const N = INDEX.chunks.length, k1 = 1.4, b = 0.75;
-  return INDEX.chunks.map(c => { let s = 0; terms.forEach(t => { const f = c.tf[t]; if (!f) return; const n = INDEX.df[t]; const idf = Math.log(1 + (N - n + 0.5) / (n + 0.5)); s += idf * (f * (k1+1)) / (f + k1 * (1 - b + b * c.len / INDEX.avgdl)); }); return {c, s}; })
-    .filter(x => x.s > 0).sort((a, b2) => b2.s - a.s).slice(0, 20);
-}
-const cosine = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) s += a[i]*b[i]; return s; }; // vectors are unit length
-
-async function search(q, k) {
-  const terms = tokenize(q);
-  const kw = bm25(terms); const lists = [kw.map(x => x.c)];
-  const bmap = new Map(kw.map(x => [x.c, x.s])); const cmap = new Map();
-  let embedded = false;
-  if (settings.embprov !== 'none' && INDEX.chunks.some(c => c.vec)) {
-    try { const [qv] = await embedTexts([q]); embedded = true;
-      const vs = INDEX.chunks.filter(c => c.vec).map(c => ({c, s: cosine(qv, c.vec)})).sort((a, b2) => b2.s - a.s).slice(0, 20);
-      vs.forEach(x => cmap.set(x.c, x.s)); lists.push(vs.map(x => x.c)); }
-    catch (e) { toast('Embedding the question failed: ' + e.message + '. Using keywords only.', 4000); }
-  }
-  const fused = new Map();
-  lists.forEach(l => l.forEach((c, r) => fused.set(c, (fused.get(c)||0) + 1/(60+r))));
-  const top = [...fused.entries()].sort((a, b2) => b2[1]-a[1]).slice(0, k).map(([c, s]) => ({c, rrf:s, bm25:bmap.get(c)||0, cos:cmap.get(c)||0}));
-  const conf = embedded ? Math.max(0, ...top.map(h => h.cos)) : Math.max(0, ...top.map(h => h.bm25));
-  const autoGate = embedded ? (settings.embprov === 'openai' ? 0.32 : 0.55) : 1.0;
-  const gate = settings.gate ? (embedded ? settings.gate/100 : settings.gate/5) : autoGate;
-  return {top, terms, conf, gate, embedded, pass: top.length > 0 && conf >= gate};
-}
-
-// ------------------------------------------------------------ providers
-function keyFor(p) { return (settings.keys[p]||'').trim(); }
-async function embedTexts(texts) {
-  const p = settings.embprov, key = (settings.embkeys[p] || settings.keys[p] || '').trim();
-  if (!key) throw new Error('no embeddings API key');
-  if (p === 'openai') {
-    const r = await fetch('https://api.openai.com/v1/embeddings', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key}, body: JSON.stringify({model:'text-embedding-3-small', input: texts})});
-    if (!r.ok) throw new Error((await r.json()).error?.message || r.statusText);
-    return (await r.json()).data.map(d => d.embedding);
-  }
-  if (p === 'gemini') {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:batchEmbedContents?key=${encodeURIComponent(key)}`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({requests: texts.map(t => ({model:'models/gemini-embedding-001', content:{parts:[{text:t}]}, outputDimensionality: 768}))})});
-    if (!r.ok) throw new Error((await r.json()).error?.message || r.statusText);
-    return (await r.json()).embeddings.map(e => { const v = e.values; const n = Math.hypot(...v) || 1; return v.map(x => x/n); });
-  }
-  throw new Error('embeddings off');
-}
-
-const SYSTEM = `You answer questions using ONLY the numbered excerpts provided in the user message.
-Rules:
-- Answer in plain words, then cite the excerpt(s) you used like [2]. Cite only excerpts you actually used.
-- Every number, date, threshold or name you state must appear in an excerpt. If it doesn't, do not state it.
-- If the excerpts do not answer the question, reply exactly: "I couldn't find that in the documents." and, if useful, say what the documents do cover nearby.
-- Keep answers under 150 words. No preamble.`;
-
-async function callModel(question, hits) {
-  const p = settings.provider, key = keyFor(p), model = (settings.models[p] || DEFAULT_MODELS[p]);
-  const excerpts = hits.map((h, i) => `[${i+1}] ${h.c.doc} › ${h.c.section}\n${h.c.text.split('\n').slice(1).join('\n')}`).join('\n\n');
-  const prior = history.slice(-2).map(h => `Previous Q: ${h.q}\nPrevious A: ${h.a}`).join('\n\n');
-  const user = (prior ? prior + '\n\n' : '') + `Excerpts:\n\n${excerpts}\n\nQuestion: ${question}`;
-  if (!key) throw new Error('Add an API key in the left panel, or choose "No model".');
-  if (p === 'openai') {
-    const r = await fetch('https://api.openai.com/v1/chat/completions', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+key}, body: JSON.stringify({model, messages:[{role:'system', content:SYSTEM},{role:'user', content:user}], max_completion_tokens: 400})});
-    const j = await r.json(); if (!r.ok) throw new Error(j.error?.message || r.statusText);
-    return {text: j.choices[0].message.content, usage: {in: j.usage?.prompt_tokens, out: j.usage?.completion_tokens}};
-  }
-  if (p === 'anthropic') {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {method:'POST', headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}, body: JSON.stringify({model, max_tokens: 400, system:[{type:'text', text:SYSTEM, cache_control:{type:'ephemeral'}}], messages:[{role:'user', content:user}]})});
-    const j = await r.json(); if (!r.ok) throw new Error(j.error?.message || r.statusText);
-    return {text: j.content.map(c => c.text||'').join(''), usage: {in: j.usage?.input_tokens, out: j.usage?.output_tokens}};
-  }
-  if (p === 'gemini') {
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({system_instruction:{parts:[{text:SYSTEM}]}, contents:[{role:'user', parts:[{text:user}]}], generationConfig:{maxOutputTokens: 400}})});
-    const j = await r.json(); if (!r.ok) throw new Error(j.error?.message || r.statusText);
-    return {text: j.candidates?.[0]?.content?.parts?.map(x => x.text).join('') || '', usage: {in: j.usageMetadata?.promptTokenCount, out: j.usageMetadata?.candidatesTokenCount}};
-  }
-  throw new Error('unknown provider');
-}
-
-function extractive(hits, terms) {
-  const body = hits[0].c.text.split('\n').slice(1).join('\n').trim();
-  if (body.length <= 450) return body + ' [1]';
-  const sents = body.match(/[^.!?]+[.!?]+/g) || [body];
-  const scored = sents.map((s, i) => ({s: s.trim(), i, n: terms.filter(t => tokenize(s).includes(t)).length}));
-  const best = scored.filter(x => x.n > 0).sort((a, b2) => b2.n - a.n || a.i - b2.i).slice(0, 2).sort((a, b2) => a.i - b2.i);
-  return (best.length ? best : scored.slice(0, 1)).map(x => x.s).join(' ') + ' [1]';
-}
-
-// ------------------------------------------------------------ ask flow
-async function ask(question) {
-  question = question.trim(); if (!question) return;
-  if (!INDEX.chunks.length) { toast('Upload a document first.'); return; }
-  $('welcome').hidden = true;
-  addMsg('user', esc(question));
-  const pending = addMsg('bot', '<span class="typing"><i></i><i></i><i></i></span>');
-  $('askbtn').disabled = true;
-  try {
-    const t0 = performance.now();
-    const r = await search(question, settings.topk);
-    lastHits = r.top; renderSources(r.top, r.terms);
-    let text, usage = null, gated = false;
-    if (!r.pass) { gated = true; text = "I couldn't find that in the documents. Try rephrasing with the words the document would use, or check the Sources tab to see the closest passages."; }
-    else if (settings.provider === 'none') text = extractive(r.top, r.terms);
-    else { const out = await callModel(question, r.top); text = out.text; usage = out.usage; }
-    const cited = new Set([...text.matchAll(/\[(\d+)\]/g)].map(m => +m[1]));
-    const srcs = gated ? [] : r.top.filter((h, i) => cited.has(i+1));
-    if (!gated && !srcs.length && !/couldn't find/i.test(text)) srcs.push(r.top[0]);
-    const dt = ((performance.now() - t0) / 1000).toFixed(1);
-    const meta = `${gated ? 'refused' : 'answered'} · confidence ${r.conf.toFixed(2)} vs threshold ${r.gate.toFixed(2)} (${r.embedded ? 'cosine' : 'keywords'}) · ${dt}s` + (usage && usage.in ? ` · ${usage.in} in / ${usage.out} out tokens` : '');
-    pending.querySelector('.bubble').innerHTML = renderAnswer(text);
-    pending.insertAdjacentHTML('beforeend', `<div class="srcs">${srcs.map(h => `<span class="src" data-src="${r.top.indexOf(h)}">[${r.top.indexOf(h)+1}] ${esc(h.c.doc)} › ${esc(h.c.section)}</span>`).join('')}</div><div class="meta">${esc(meta)}</div>`);
-    if (!gated) { history.push({q: question, a: text}); }
-  } catch (e) {
-    pending.querySelector('.bubble').innerHTML = `<p><span class="pill bad">error</span> ${esc(e.message)}</p>`;
-  }
-  $('askbtn').disabled = false; $('chat').scrollTop = $('chat').scrollHeight;
-}
-function renderAnswer(text) {
-  text = text.replace(/(__|\*\*)/g, '');
-  return esc(text).split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g, '<br>').replace(/\[(\d+)\]/g, '<span class="cit" data-src="$1">[$1]</span>') + '</p>').join('');
-}
-function addMsg(role, html) {
-  const d = document.createElement('div'); d.className = 'msg ' + role; d.innerHTML = `<div class="bubble">${html}</div>`;
-  $('chat').appendChild(d); $('chat').scrollTop = $('chat').scrollHeight; return d;
-}
-function highlight(text, terms) {
-  let out = esc(text); const words = new Set((text.toLowerCase().replace(/[\u2019'`]/g, '').match(/[a-z0-9][a-z0-9\-']*/g)||[]).filter(w => terms.includes(stem(w)) && w.length > 2));
-  words.forEach(w => { out = out.replace(new RegExp('\\b(' + w.replace(/[-]/g,'\\-') + ')\\b', 'gi'), '<mark>$1</mark>'); }); return out;
-}
-function renderSources(top, terms) {
-  $('srcview').innerHTML = top.length ? top.map((h, i) => `<div class="c" id="src-${i}"><div class="h"><div>[${i+1}] ${esc(h.c.doc)} › ${esc(h.c.section)}</div><span>${h.cos ? 'cos ' + h.cos.toFixed(2) + ' · ' : ''}bm25 ${h.bm25.toFixed(1)}</span></div><div class="t">${highlight(h.c.text.split('\n').slice(1).join('\n'), terms)}</div></div>`).join('') : '<p>No passage matched.</p>';
-}
-document.addEventListener('click', e => { const s = e.target.closest('[data-src]'); if (!s) return; const i = s.dataset.src - (s.classList.contains('cit') ? 1 : 0); openRight('sources'); const el = $('src-' + i); if (el) { el.scrollIntoView({block:'center'}); el.style.outline = '2px solid var(--accent)'; setTimeout(()=>el.style.outline='', 1200); } });
-
-// ------------------------------------------------------------ documents UI
-async function addFiles(files) {
-  const list = [...files]; if (!list.length) return;
-  $('prog').hidden = false; let done = 0;
-  for (const f of list) {
-    const id = 'd' + Date.now() + Math.random().toString(36).slice(2, 7);
-    const doc = {id, name: f.name, kind: (f.name.split('.').pop()||'').toLowerCase(), addedAt: Date.now(), chunks: [], size: f.size};
-    try {
-      const parsed = await parseFile(f);
-      doc.title = parsed.title || doc.name; doc.note = parsed.note || '';
-      doc.chunks = chunkSections(parsed.secs, doc.title).map((c, i) => ({id: id + ':' + i, doc: doc.title, section: c.section, text: c.text}));
-      if (!doc.chunks.length) doc.error = doc.kind === 'pdf' ? 'No text found. This is probably a scanned PDF; run OCR first.' : 'No text found in file.';
-    } catch (e) { doc.error = 'Could not read: ' + e.message; }
-    docs.push(doc); await DB.put(doc);
-    done++; $('prog').querySelector('i').style.width = (done / list.length * 100) + '%';
-    renderDocs(); rebuildIndex();
-  }
-  setTimeout(() => { $('prog').hidden = true; $('prog').querySelector('i').style.width = '0'; }, 400);
-  if (settings.embprov !== 'none') embedMissing();
-}
-async function embedMissing() {
-  const missing = INDEX.chunks.filter(c => !c.vec); if (!missing.length) return;
-  if (!(settings.embkeys[settings.embprov] || settings.keys[settings.embprov])) { toast('Add an embeddings API key to embed ' + missing.length + ' passages.'); return; }
-  $('embedall').disabled = true; let n = 0;
-  try {
-    for (let i = 0; i < missing.length; i += 50) {
-      const batch = missing.slice(i, i + 50); const vecs = await embedTexts(batch.map(c => c.text));
-      batch.forEach((c, j) => c.vec = vecs[j]); n += batch.length; $('s-emb').textContent = INDEX.chunks.filter(c=>c.vec).length;
-    }
-    for (const d of docs) await DB.put(d);
-    toast(`Embedded ${n} passages.`);
-  } catch (e) { toast('Embedding failed: ' + e.message, 5000); }
-  $('embedall').disabled = false; renderStatus();
-}
-function renderDocs() {
-  $('doclist').innerHTML = docs.map(d => `<div class="doc ${d.error ? 'err' : ''}" title="${esc(d.error || d.title)}"><div class="ic">${esc(d.kind.toUpperCase().slice(0,4))}</div><div><div class="n">${esc(d.title || d.name)}</div><div class="m">${d.error ? esc(d.error) : `${d.chunks.length} passages${d.note ? ' · ' + esc(d.note) : ''}`}</div></div><button data-del="${d.id}" aria-label="Remove">✕</button></div>`).join('') || '<div class="meta">No documents yet.</div>';
-  $('st1').classList.toggle('done', docs.some(d => d.chunks.length));
-}
-$('doclist').addEventListener('click', async e => { const b = e.target.closest('[data-del]'); if (!b) return; docs = docs.filter(d => d.id !== b.dataset.del); await DB.del(b.dataset.del); renderDocs(); rebuildIndex(); });
-$('clearall').addEventListener('click', async () => { if (!docs.length) return; docs = []; await DB.clear(); renderDocs(); rebuildIndex(); history = []; toast('Cleared.'); });
-$('embedall').addEventListener('click', embedMissing);
-$('exportidx').addEventListener('click', () => { const blob = new Blob([JSON.stringify({exported: new Date().toISOString(), docs}, null, 0)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'docchat-index.json'; a.click(); });
-const drop = $('drop'), fileIn = $('file');
-drop.addEventListener('click', () => fileIn.click()); drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileIn.click(); });
-fileIn.addEventListener('change', () => { addFiles(fileIn.files); fileIn.value = ''; });
-['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
-['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
-drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
-document.addEventListener('dragover', e => e.preventDefault()); document.addEventListener('drop', e => { if (!drop.contains(e.target)) e.preventDefault(); });
-
-// ------------------------------------------------------------ settings UI
-function saveSettings() { LS.set('docchat.settings', settings); renderStatus(); }
-function loadSettingsUI() {
-  $('provider').value = settings.provider; $('apikey').value = settings.keys[settings.provider] || ''; $('model').value = settings.models[settings.provider] || DEFAULT_MODELS[settings.provider] || '';
-  $('modelhint').textContent = MODEL_HINTS[settings.provider]; $('f-key').hidden = $('f-model').hidden = settings.provider === 'none';
-  $('embprov').value = settings.embprov; $('embkey').value = settings.embkeys[settings.embprov] || ''; $('f-embkey').hidden = settings.embprov === 'none';
-  $('embpill').textContent = settings.embprov === 'none' ? 'off' : 'on'; $('embpill').className = 'pill ' + (settings.embprov === 'none' ? 'warn' : 'good');
-  $('topk').value = settings.topk; $('topk-v').textContent = settings.topk; $('gate').value = settings.gate; $('gate-v').textContent = settings.gate ? settings.gate : 'auto';
-  $('st2').classList.toggle('done', settings.provider === 'none' || !!keyFor(settings.provider));
-}
-$('provider').addEventListener('change', () => { settings.provider = $('provider').value; saveSettings(); loadSettingsUI(); });
-$('apikey').addEventListener('input', () => { settings.keys[settings.provider] = $('apikey').value; saveSettings(); $('st2').classList.toggle('done', !!keyFor(settings.provider)); });
-$('model').addEventListener('input', () => { settings.models[settings.provider] = $('model').value.trim(); saveSettings(); });
-$('embprov').addEventListener('change', () => { settings.embprov = $('embprov').value; saveSettings(); loadSettingsUI(); if (settings.embprov !== 'none') embedMissing(); });
-$('embkey').addEventListener('input', () => { settings.embkeys[settings.embprov] = $('embkey').value; saveSettings(); });
-$('topk').addEventListener('input', () => { settings.topk = +$('topk').value; $('topk-v').textContent = settings.topk; saveSettings(); });
-$('gate').addEventListener('input', () => { settings.gate = +$('gate').value; $('gate-v').textContent = settings.gate ? settings.gate : 'auto'; saveSettings(); });
-$('testkey').addEventListener('click', async () => {
-  $('keystatus').textContent = 'testing…';
-  try { if (settings.provider === 'none') { $('keystatus').textContent = 'no model selected'; return; }
-    const r = await callModel('Reply with the single word OK.', [{c:{doc:'Test', section:'Test', text:'Test › Test\nThis is a connectivity test. The answer is OK.'}}]);
-    $('keystatus').textContent = 'connected · ' + (settings.models[settings.provider] || DEFAULT_MODELS[settings.provider]) + ' replied'; $('st2').classList.add('done');
-  } catch (e) { $('keystatus').textContent = 'failed: ' + e.message; }
-});
-function renderStatus() {
-  const p = settings.provider; const emb = settings.embprov !== 'none'; const embedded = INDEX.chunks.filter(c=>c.vec).length;
-  $('status').innerHTML = `<span class="pill ${docs.length ? 'good' : 'warn'}">${docs.length} doc${docs.length===1?'':'s'} · ${INDEX.chunks.length} passages</span>` +
-    `<span class="pill ${p==='none' ? 'warn' : keyFor(p) ? 'good' : 'bad'}">${p==='none' ? 'no model: quoting passages' : (keyFor(p) ? (settings.models[p]||DEFAULT_MODELS[p]) : p + ': key missing')}</span>` +
-    `<span class="pill ${emb && embedded === INDEX.chunks.length && INDEX.chunks.length ? 'good' : emb ? 'warn' : 'acc'}">${emb ? `embeddings ${embedded}/${INDEX.chunks.length}` : 'keyword search'}</span>`;
-  $('note').textContent = p === 'none' ? 'No model selected: answers are the best-matching passage, quoted. Add a key for written answers.' : (emb ? '' : 'Keyword search only. Turn on embeddings for meaning-aware search and reliable "I don\'t know".');
-}
-
-// ------------------------------------------------------------ right panel + chat controls
-function openRight(tab) { $('right').classList.add('open'); document.querySelectorAll('.tabs button[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === tab)); document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + tab)); }
-document.querySelectorAll('.tabs button[data-tab]').forEach(b => b.addEventListener('click', () => openRight(b.dataset.tab)));
-$('openright').addEventListener('click', () => openRight('guide')); $('closeright').addEventListener('click', () => $('right').classList.remove('open'));
-$('newchat').addEventListener('click', () => { history = []; $('chat').querySelectorAll('.msg').forEach(m => m.remove()); $('welcome').hidden = false; toast('New chat. Documents kept.'); });
-$('askform').addEventListener('submit', e => { e.preventDefault(); const q = $('q').value; $('q').value = ''; $('q').style.height = 'auto'; ask(q); });
-$('q').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('askform').requestSubmit(); } });
-$('q').addEventListener('input', () => { $('q').style.height = 'auto'; $('q').style.height = Math.min($('q').scrollHeight, 160) + 'px'; });
-
-// ------------------------------------------------------------ sample handbook (fictional)
-const SAMPLE = `# Kestrel Labs Handbook (sample)
-
-## Annual leave
-Full-time employees receive 24 days of paid annual leave per calendar year, in addition to public holidays. Leave accrues at 2 days per month from your start date. Part-time staff accrue pro rata.
-
-## Carry-over
-Up to 5 unused days of annual leave can be carried into the next year and must be used by 31 March. Days beyond 5 are forfeited unless your manager approved a deferral in writing before 1 December.
-
-## Sick leave
-Sick leave is uncapped for the first 10 working days per year and does not require a medical certificate. From day 11 onward, a doctor's note is required and payments continue at full salary for up to 60 days.
-
-## Parental leave
-Primary caregivers receive 26 weeks of fully paid parental leave; secondary caregivers receive 8 weeks. Leave can be split into two blocks within the first 18 months. Notify People Ops at least 8 weeks before the expected start.
-
-## Expense approval thresholds
-Expenses under $200 are auto-approved on submission. Between $200 and $1,000 your manager must approve. Above $1,000 the head of finance approves and a quote must be attached before the purchase.
-
-## Submitting an expense claim
-Submit claims in Expensify within 30 days of the expense with an itemised receipt. Claims without receipts are capped at $25. Reimbursement lands in the payroll run on the 25th of each month.
-
-## Home office budget
-New joiners receive a one-off home office budget of $750 for a desk, chair, monitor and peripherals. Ergonomic equipment such as a standing desk or ergonomic chair counts toward this budget. A further $250 is available every 2 years for replacements.
-
-## Lost or damaged devices
-Report a lost or stolen laptop to IT within 24 hours so it can be remotely wiped. Accidental damage is covered; you will not be charged. Repeated losses may be reviewed with your manager.
-
-## Working from another country
-Kestrel Labs is remote-first. You can work from anywhere in your country of employment. Working from another country is allowed for up to 30 days per year with 2 weeks' notice to People Ops, for tax reasons.
-
-## Reporting a security incident
-If you suspect a breach, phishing or a leaked credential, post in #security-incidents or page the on-call engineer immediately. Do not try to fix it yourself first. Reporting within 1 hour is a target, not a blame tool.
-
-## Incident severity levels
-SEV1 means the product is down or data is at risk; SEV2 means a major feature is degraded; SEV3 is a minor bug with a workaround. SEV1 and SEV2 incidents page the on-call engineer and require an incident channel.
-
-## Learning budget
-Every employee has a $1,200 annual learning budget for courses, conferences and books. Conferences requiring travel need manager approval; the travel itself comes from the team budget, not the learning budget.
-
-## Referral bonus
-Employees who refer a hired candidate receive a $2,000 referral bonus, paid after the new hire completes probation. Referrals for roles in your own reporting line are still eligible.
-
-## Office closure
-Staff observe the public holidays of their country of employment. In addition, the company closes between 24 December and 1 January; these days do not count against annual leave.
-`;
-$('loadsample').addEventListener('click', e => { e.preventDefault(); addFiles([new File([SAMPLE], 'kestrel-labs-handbook.md', {type:'text/markdown'})]); toast('Sample handbook added. Try: "Can I expense a standing desk?"'); });
-
-// ------------------------------------------------------------ boot
-(async () => {
-  try { await DB.open(); docs = await DB.all(); } catch (e) { toast('Browser storage unavailable; documents will not persist.', 4000); }
-  let repaired = 0;
-  for (const d of docs) {
-    if ((d.chunks || []).some(c => /data:[a-z]+\/|\]\(|__/.test(c.text))) {
-      const body = d.chunks.map(c => c.text.split('\n').slice(1).join('\n')).join('\n\n');
-      const m = sectionsFromMarkdown(cleanDocxMarkdown(body), d.title || d.name);
-      d.chunks = chunkSections(m.secs, d.title || d.name).map((c, i) => ({id: d.id + ':' + i, doc: d.title || d.name, section: c.section, text: c.text}));
-      try { await DB.put(d); } catch (e) {}
-      repaired++;
-    }
-  }
-  loadSettingsUI(); renderDocs(); rebuildIndex();
-  if (repaired) toast(`Re-indexed ${repaired} document${repaired > 1 ? 's' : ''} with the improved Word cleaner.`, 4000);
-  if (docs.length) $('welcome').hidden = false;
-})();
+document.documentElement.classList.add("js-anim");
+render(window.PORTFOLIO);
 })();
 </script>
 </body>
