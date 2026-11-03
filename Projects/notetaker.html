@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meeting Notetaker · AI meeting notes that join every call</title>
+<meta name="description" content="A bot that joins every meeting on your Google Calendar, records it, and emails you the summary and action items.">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#000;--surface:#0A0A0A;--raised:#141414;--border:#262626;--border-strong:#3F3F3F;
+  --text:#fff;--muted:#A3A3A3;--faint:#737373;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:#fff;color:#000}
+a{color:#fff;text-underline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+code{font-family:var(--mono);font-size:.88em;background:var(--raised);border:1px solid var(--border);border-radius:5px;padding:1px 6px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:56px;gap:12px}
+.back{color:var(--muted);text-decoration:none;font-size:14px}
+.back:hover{color:#fff}
+.top nav{display:flex;gap:20px;font-size:13px}
+.top nav a{color:var(--muted);text-decoration:none}
+.top nav a:hover{color:#fff}
+@media(max-width:640px){.top nav{display:none}}
+
+/* hero */
+.hero{padding:72px 0 40px}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(36px,6vw,64px);line-height:1.02;letter-spacing:-.04em;margin:16px 0 18px;font-weight:800;max-width:15ch}
+.hero p.lede{font-size:clamp(16px,2vw,19px);color:#D4D4D4;max-width:62ch;margin:0 0 28px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #fff;border-radius:8px;padding:11px 18px;font:600 14px/1 Inter,sans-serif;cursor:pointer;background:#fff;color:#000;text-decoration:none;transition:background .12s}
+.btn:hover{background:#E5E5E5}
+.btn.out{background:transparent;color:#fff;border-color:var(--border-strong)}
+.btn.out:hover{border-color:#fff}
+.btn.sm{padding:7px 12px;font-size:13px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:28px}
+.tag{font:12px/1 var(--mono);border:1px solid var(--border-strong);border-radius:999px;padding:6px 10px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:12px;margin-top:40px;overflow:hidden}
+.stat{padding:18px 20px;border-left:1px solid var(--border)}
+.stat:first-child{border-left:0}
+.stat b{display:block;font-size:28px;letter-spacing:-.03em}
+.stat span{font-size:13px;color:var(--muted)}
+@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(3){border-left:0}.stat:nth-child(n+3){border-top:1px solid var(--border)}}
+
+/* sections */
+section.s{padding:56px 0;border-top:1px solid var(--border)}
+.s h2{font-size:clamp(24px,3.4vw,34px);letter-spacing:-.03em;margin:10px 0 10px;line-height:1.1}
+.s .sub{color:var(--muted);max-width:66ch;margin:0 0 28px}
+
+/* ── demo frame ── */
+.frame{border:1px solid var(--border-strong);border-radius:14px;overflow:hidden;background:var(--bg)}
+.chrome{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface)}
+.dots{display:flex;gap:6px}.dots i{width:10px;height:10px;border-radius:50%;border:1px solid var(--border-strong);display:block}
+.url{flex:1;font:12px var(--mono);color:var(--muted);background:#000;border:1px solid var(--border);border-radius:6px;padding:5px 10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.demo{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:980px){.demo{grid-template-columns:1fr 360px}}
+.app{padding:18px;display:grid;gap:14px;align-content:start}
+@media(min-width:720px){.app{grid-template-columns:300px 1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.card h3{font-size:14px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
+.small{font-size:13px}.muted{color:var(--muted)}.faint{color:var(--faint)}
+.note{background:var(--raised);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:12.5px;margin-top:10px}
+.setting{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--border);margin-top:12px;padding-top:12px}
+.setting .t{font-weight:600;font-size:13.5px}
+.switch{width:40px;height:24px;border-radius:999px;border:1px solid var(--border-strong);background:#000;position:relative;cursor:pointer;flex:none;padding:0}
+.switch span{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--faint);transition:left .15s,background .15s}
+.switch.on{background:#fff;border-color:#fff}
+.switch.on span{left:19px;background:#000}
+.switch:disabled{opacity:.4;cursor:not-allowed}
+.switch:focus-visible,.btn:focus-visible,.rowbtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.list{list-style:none;margin:0;padding:0}
+.row{display:flex;gap:12px;align-items:center;padding:11px 2px;border-top:1px solid var(--border)}
+.row:first-child{border-top:0}
+.row .m{flex:1;min-width:0}
+.row .ti{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rowbtn{all:unset;display:flex;gap:12px;align-items:center;width:100%;cursor:pointer}
+.rowbtn:hover .ti{text-decoration:underline;text-underline-offset:3px}
+.empty{border:1px dashed var(--border);border-radius:10px;padding:18px;text-align:center;color:var(--faint);font-size:13px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap;border:1px solid var(--border-strong);color:#fff}
+.b-done{background:#fff;color:#000;border-color:#fff}
+.b-work{color:var(--muted)}
+.b-wait{border-color:#fff}.b-wait::before{content:"!";font-weight:800}
+.b-live{border-color:#fff}.b-live::before{content:"";width:7px;height:7px;border-radius:50%;background:#fff;animation:pulse 1.2s infinite}
+.b-muted{border-style:dashed;color:var(--faint)}
+@keyframes pulse{50%{opacity:.25}}
+
+/* simulated meeting */
+.meet{border-top:1px solid var(--border);padding:16px;background:#050505;display:flex;flex-direction:column;gap:12px}
+@media(min-width:980px){.meet{border-top:0;border-left:1px solid var(--border)}}
+.meet-h{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tile{aspect-ratio:16/10;border:1px solid var(--border);border-radius:10px;background:var(--surface);display:grid;place-items:center;position:relative;font-size:12px;color:var(--muted);transition:border-color .2s}
+.tile .av{width:38px;height:38px;border-radius:50%;border:1px solid var(--border-strong);display:grid;place-items:center;font-weight:700;color:#fff;font-size:14px}
+.tile .nm{position:absolute;left:8px;bottom:6px;font-size:11px;color:#D4D4D4}
+.tile.speaking{border-color:#fff}
+.tile.bot{border-style:dashed}
+.tile.bot.in{border-style:solid}
+.tile .rec{position:absolute;right:8px;top:7px;font:600 10px var(--mono);display:none;align-items:center;gap:5px}
+.tile .rec::before{content:"";width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.2s infinite}
+.tile.bot.recording .rec{display:flex}
+.waiting{border:1px solid #fff;border-radius:10px;padding:12px;display:none;gap:10px;align-items:center;justify-content:space-between;font-size:13px}
+.waiting.show{display:flex}
+.captions{min-height:96px;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;color:#D4D4D4;background:#000}
+.captions b{color:#fff}
+.meet-ctl{display:flex;gap:8px;flex-wrap:wrap}
+.log{font:12px/1.7 var(--mono);color:var(--faint);border-top:1px solid var(--border);padding-top:10px;max-height:120px;overflow:auto}
+.log div::before{content:"› ";color:var(--muted)}
+
+/* notes drawer */
+.notes{display:none;border-top:1px solid var(--border);padding:22px 18px 26px}
+.notes.show{display:block}
+.notes-grid{display:grid;gap:16px}
+@media(min-width:900px){.notes-grid{grid-template-columns:1fr 340px}}
+.notes h4{font:600 11px/1 Inter;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.notes ul{margin:0;padding-left:18px}.notes li{margin:4px 0}
+table.items{width:100%;border-collapse:collapse;font-size:13.5px}
+table.items th{text-align:left;color:var(--muted);font:500 11px Inter;letter-spacing:.08em;text-transform:uppercase;padding:6px}
+table.items td{border-top:1px solid var(--border);padding:9px 6px;vertical-align:top}
+details summary{cursor:pointer;color:var(--muted);font-size:12px;margin-top:3px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+blockquote{margin:6px 0 0;padding-left:10px;border-left:2px solid #fff;color:var(--muted);font-size:12.5px}
+.dropped{border:1px dashed var(--border-strong);border-radius:8px;padding:8px 10px;font-size:12.5px;color:var(--muted);margin-top:10px}
+.dropped s{color:var(--faint)}
+.tline{display:grid;grid-template-columns:44px 1fr;gap:8px;padding:6px 0;border-top:1px solid var(--border);font-size:13px}
+.tline:first-child{border-top:0}
+.ts{font:11px var(--mono);color:var(--faint);padding-top:2px}
+.mail{background:#fff;color:#000;border-radius:10px;padding:16px;font-size:13px}
+.mail .k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#555}
+.mail h5{font-size:16px;margin:2px 0 8px}
+.mail table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.mail td{border-top:1px solid #ddd;padding:5px 4px;vertical-align:top}
+.mail .cta{display:inline-block;margin-top:10px;background:#000;color:#fff;border-radius:8px;padding:7px 12px;font-weight:600;font-size:12px}
+.hint{font-size:12.5px;color:var(--muted);margin:12px 2px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kbd{font:11px var(--mono);border:1px solid var(--border-strong);border-radius:4px;padding:1px 5px}
+
+/* how it works */
+.steps{display:grid;gap:12px;counter-reset:s}
+@media(min-width:800px){.steps{grid-template-columns:repeat(4,1fr)}}
+.step{border:1px solid var(--border);border-radius:12px;padding:18px;counter-increment:s}
+.step::before{content:counter(s,decimal-leading-zero);font:600 12px var(--mono);color:var(--muted)}
+.step h3{font-size:16px;margin:10px 0 6px}
+.step p{margin:0;color:var(--muted);font-size:14px}
+.diagram{margin-top:20px;border:1px solid var(--border);border-radius:12px;padding:16px;overflow-x:auto;background:var(--surface)}
+.diagram svg{display:block;min-width:820px;width:100%;height:auto}
+
+/* tables & cards */
+.twocol{display:grid;gap:14px}
+@media(min-width:860px){.twocol{grid-template-columns:1fr 1fr}}
+.t{width:100%;border-collapse:collapse;font-size:14px}
+.t th,.t td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top}
+.t th{background:var(--surface);font-weight:600}
+.twocol>div,.app>div,.demo>*{min-width:0}
+@media(max-width:720px){.t{display:block;overflow-x:auto}.t th,.t td{min-width:120px}}
+.feat{border:1px solid var(--border);border-radius:12px;padding:18px}
+.feat h3{margin:0 0 6px;font-size:16px}
+.feat p{margin:0;color:var(--muted);font-size:14px}
+.feats{display:grid;gap:12px}
+@media(min-width:720px){.feats{grid-template-columns:repeat(3,1fr)}}
+pre.code{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow-x:auto;font:12.5px/1.65 var(--mono);color:#F5F5F5}
+pre.code .c{color:var(--faint)}
+.callout{border-left:3px solid #fff;background:var(--surface);border-radius:0 10px 10px 0;padding:12px 16px;margin-top:16px;font-size:14px}
+.callout b:first-child{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+footer{border-top:1px solid var(--border);padding:36px 0 56px;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="back" id="backLink" href="/">← Back to portfolio</a>
+    <nav>
+      <a href="#demo">Demo</a><a href="#how">How it works</a><a href="#engineering">Engineering</a><a href="#stack">Stack</a><a href="#run">Run it</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ═════════ HERO ═════════ -->
+  <section class="hero">
+    <div class="eyebrow">AI · Automation · Full-stack</div>
+    <h1>A notetaker that joins every meeting for you.</h1>
+    <p class="lede">Sign in with Google once. From then on, a bot joins every Google Meet, Zoom and Teams call on your calendar, records it, writes the summary and action items, and emails them to you. Kick it out of a call and it leaves without taking notes.</p>
+    <div class="btns">
+      <a class="btn" href="#demo">Try the interactive demo</a>
+      <a class="btn out" id="appLink" href="#run" target="_blank" rel="noopener">Open the live app ↗</a>
+      <a class="btn out" id="repoLink" href="#run" target="_blank" rel="noopener">View the code ↗</a>
+    </div>
+    <div class="tags">
+      <span class="tag">Next.js 15</span><span class="tag">TypeScript</span><span class="tag">Google OAuth</span><span class="tag">Recall.ai</span><span class="tag">GPT-5 mini</span><span class="tag">Supabase</span><span class="tag">Resend</span><span class="tag">Vercel</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>1 click</b><span>to connect your calendar</span></div>
+      <div class="stat"><b>~2 min</b><span>from hang-up to email</span></div>
+      <div class="stat"><b>~$0.65</b><span>per recorded hour</span></div>
+      <div class="stat"><b>51</b><span>automated checks passing</span></div>
+    </div>
+  </section>
+
+  <!-- ═════════ DEMO ═════════ -->
+  <section class="s" id="demo">
+    <div class="eyebrow">Interactive demo</div>
+    <h2>Run a meeting, start to finish.</h2>
+    <p class="sub">This runs entirely in your browser with sample data. Press <b>Start meeting</b>, admit the bot, and watch it record, summarise and email. Or remove it mid-call and see it leave without taking notes.</p>
+
+    <div class="frame">
+      <div class="chrome"><div class="dots"><i></i><i></i><i></i></div><div class="url" id="fakeUrl">meeting-notetaker.vercel.app</div></div>
+      <div class="demo">
+        <!-- the app -->
+        <div class="app">
+          <div style="display:grid;gap:14px;align-content:start">
+            <div class="card">
+              <h3>Google Calendar <span class="badge b-done">Connected</span></h3>
+              <div class="small muted">aradhita@example.com</div>
+              <div class="note" id="bookedNote"></div>
+              <div class="setting">
+                <div><div class="t">Join all my meetings</div><div class="small faint" id="autoText">The bot joins every meeting with a video link.</div></div>
+                <button class="switch on" id="autoSwitch" role="switch" aria-checked="true" aria-label="Join all my meetings"><span></span></button>
+              </div>
+              <div class="setting">
+                <div><div class="t">Email the notes to</div></div>
+                <span class="small muted">Only me</span>
+              </div>
+            </div>
+          </div>
+          <div style="display:grid;gap:14px;align-content:start">
+            <div class="card" id="liveCard" style="display:none">
+              <h3>Happening now</h3>
+              <ul class="list" id="liveList"></ul>
+            </div>
+            <div class="card">
+              <h3>Upcoming</h3>
+              <ul class="list" id="upList"></ul>
+            </div>
+            <div class="card">
+              <h3>Past meetings</h3>
+              <ul class="list" id="pastList"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- simulated call -->
+        <aside class="meet" aria-label="Simulated Google Meet call">
+          <div class="meet-h"><b>Google Meet <span class="faint">(simulated)</span></b><span class="faint" id="clock">Not started</span></div>
+          <div class="tiles">
+            <div class="tile" id="t-A"><div class="av">A</div><span class="nm">Aradhita (you)</span></div>
+            <div class="tile" id="t-P"><div class="av">P</div><span class="nm">Priya · Acme</span></div>
+            <div class="tile" id="t-R"><div class="av">R</div><span class="nm">Rohan · Acme</span></div>
+            <div class="tile bot" id="t-B" style="opacity:.25"><div class="av">✎</div><span class="nm">Aradhita's Notetaker</span><span class="rec">REC</span></div>
+          </div>
+          <div class="waiting" id="waiting"><span><b>Aradhita's Notetaker</b> wants to join</span><button class="btn sm" id="admitBtn">Admit</button></div>
+          <div class="captions" id="captions"><span class="faint">Captions appear here during the call.</span></div>
+          <div class="meet-ctl">
+            <button class="btn sm" id="startBtn">▶ Start meeting</button>
+            <button class="btn sm out" id="kickBtn" disabled>Remove bot from call</button>
+            <button class="btn sm out" id="endBtn" disabled>End call</button>
+            <button class="btn sm out" id="resetBtn">Reset</button>
+          </div>
+          <div class="log" id="log"></div>
+        </aside>
+      </div>
+
+      <!-- meeting notes -->
+      <div class="notes" id="notes" aria-live="polite"></div>
+    </div>
+    <p class="hint"><span class="kbd">Tip</span> Turn off the switch next to <b>Acme – pilot follow-up</b> before starting, and the bot won't come. Click a finished meeting to open its notes.</p>
+  </section>
+
+  <!-- ═════════ HOW ═════════ -->
+  <section class="s" id="how">
+    <div class="eyebrow">How it works</div>
+    <h2>Four steps, and you only do the first.</h2>
+    <p class="sub">The calendar is the source of truth. The app keeps "one bot per meeting" true as your calendar changes.</p>
+    <div class="steps">
+      <div class="step"><h3>Connect</h3><p>Sign in with Google and allow read-only calendar access. The refresh token goes to Recall.ai, which watches the calendar.</p></div>
+      <div class="step"><h3>Book</h3><p>Every event with a Meet, Zoom or Teams link in the next 14 days gets a bot. Meetings already in progress get one immediately.</p></div>
+      <div class="step"><h3>Record</h3><p>At start time the bot asks to join. After someone admits it, it records and transcribes with speaker names.</p></div>
+      <div class="step"><h3>Summarise</h3><p>GPT-5 mini writes the summary and action items, each checked against the transcript. Then it's emailed and saved.</p></div>
+    </div>
+
+    <div class="diagram" role="img" aria-label="Architecture: browser, Next.js app, Google, Recall.ai, Supabase, OpenAI, Resend">
+      <svg viewBox="0 0 980 300" fill="none" stroke="#fff" font-family="Inter, sans-serif" font-size="13">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#fff" stroke="none"/></marker></defs>
+        <!-- boxes -->
+        <rect x="10" y="120" width="130" height="60" rx="8"/><text x="75" y="146" text-anchor="middle" fill="#fff" stroke="none" font-weight="700">You</text><text x="75" y="164" text-anchor="middle" fill="#A3A3A3" stroke="none" font-size="11">browser · dashboard</text>
+        <rect x="230" y="90" width="230" height="120" rx="10" stroke-width="2"/><text x="345" y="118" text-anchor="middle" fill="#fff" stroke="none" font-weight="700">Next.js app (Vercel)</text>
+        <text x="345" y="142" text-anchor="middle" fill="#A3A3A3" stroke="none" font-size="11">calendar.ts · which meetings get a bot</text>
+        <text x="345" y="160" text-anchor="middle" fill="#A3A3A3" stroke="none" font-size="11">pipeline.ts · record → summary → email</text>
+        <text x="345" y="178" text-anchor="middle" fill="#A3A3A3" stroke="none" font-size="11">webhook · polling · DB lock</text>
+        <rect x="560" y="10" width="170" height="54" rx="8"/><text x="645" y="34" text-anchor="middle" fill="#fff" stroke="none" font-weight="700">Google</text><text x="645" y="51" text-anchor="middle" fill="#A3A3A3" stroke="none" font-size="11">sign-in · calendar (read)</text>
+        <rect x="560" y="84" width="170" height="54" rx="8"/><text x="645" y="108" text-anchor="middle" fill="#fff" stroke="none" font-weight="700">Recall.ai</text><text x="645" y="125" text-anchor="middle" fill="#A3A3A3" stroke="none" font-size="11">calendar watch · bot · transcript</text>
+        <rect x="560" y="158" width="170" height="54" rx="8"/><text x="645" y="182" text-anchor="middle" fill="#fff" stroke="none" font-weight="700">OpenAI</text><text x="645" y="199" text-anchor="middle" fill="#A3A3A3" stroke="none" font-size="11">GPT-5 mini · strict JSON</text>
+        <rect x="560" y="232" width="170" height="54" rx="8"/><text x="645" y="256" text-anchor="middle" fill="#fff" stroke="none" font-weight="700">Supabase · Resend</text><text x="645" y="273" text-anchor="middle" fill="#A3A3A3" stroke="none" font-size="11">database · email</text>
+        <rect x="820" y="84" width="150" height="54" rx="8" stroke-dasharray="5 4"/><text x="895" y="108" text-anchor="middle" fill="#fff" stroke="none" font-weight="700">Meet · Zoom · Teams</text><text x="895" y="125" text-anchor="middle" fill="#A3A3A3" stroke="none" font-size="11">the actual call</text>
+        <!-- arrows -->
+        <path d="M140 150H226" marker-end="url(#ar)"/>
+        <path d="M460 120C510 120 510 37 556 37" marker-end="url(#ar)"/>
+        <path d="M460 140C510 140 510 111 556 111" marker-end="url(#ar)"/>
+        <path d="M556 124C510 124 505 160 464 160" stroke-dasharray="4 4" marker-end="url(#ar)"/>
+        <text x="487" y="186" fill="#737373" stroke="none" font-size="10.5">webhooks</text>
+        <path d="M460 175C510 175 510 185 556 185" marker-end="url(#ar)"/>
+        <path d="M460 195C510 195 510 259 556 259" marker-end="url(#ar)"/>
+        <path d="M730 111H816" marker-end="url(#ar)"/><text x="748" y="102" fill="#737373" stroke="none" font-size="10.5">bot joins</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ═════════ ENGINEERING ═════════ -->
+  <section class="s" id="engineering">
+    <div class="eyebrow">Engineering</div>
+    <h2>The decisions that make it trustworthy.</h2>
+    <p class="sub">Recording people is sensitive, and AI can make things up. Most of the work went into keeping the bot under control and the notes honest.</p>
+
+    <div class="feats">
+      <div class="feat"><h3>Evidence check</h3><p>Every action item must quote the exact words where someone made the promise. If the quote isn't in the transcript, the item is dropped before anyone sees it.</p></div>
+      <div class="feat"><h3>Kick-out = no notes</h3><p>If anyone removes the bot from a call, the meeting is marked "Bot removed", the recording is deleted, and nothing is summarised or emailed.</p></div>
+      <div class="feat"><h3>Never twice</h3><p>Webhooks and polling can arrive at the same moment. A single atomic database update decides who summarises, so there's one summary and one email per meeting.</p></div>
+      <div class="feat"><h3>One bot per meeting</h3><p>Bookings use a dedup key of start time + link, so a meeting on several people's calendars gets one shared bot, and each person still gets their own notes.</p></div>
+      <div class="feat"><h3>Read-only and private</h3><p>Calendar access is read-only, the Google token lives with Recall rather than in our database, and every page and API is scoped to the signed-in user.</p></div>
+      <div class="feat"><h3>Honest about limits</h3><p>Meet and Zoom hold bots in a waiting room, so someone clicks Admit once. The docs explain the two ways around it rather than pretending it doesn't exist.</p></div>
+    </div>
+
+    <div class="twocol" style="margin-top:20px">
+      <div>
+        <h3 style="font-size:15px;margin:8px 0 10px">What happens to each calendar event</h3>
+        <table class="t">
+          <thead><tr><th>The event…</th><th>The bot…</th></tr></thead>
+          <tbody>
+            <tr><td>is in the future with a link</td><td>is booked for the start time</td></tr>
+            <tr><td>has already started</td><td>is sent right now</td></tr>
+            <tr><td>is moved</td><td>is re-booked for the new time</td></tr>
+            <tr><td>is cancelled or declined</td><td>is taken off it</td></tr>
+            <tr><td>has no video link / is over</td><td>is ignored</td></tr>
+            <tr><td>is switched off by you</td><td>stays off through every sync</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 style="font-size:15px;margin:8px 0 10px">The AI's contract (strict JSON schema)</h3>
+<pre class="code">{
+  "summary": "3–5 sentences, who wanted what",
+  "key_points": ["…"],
+  "decisions": ["only what was agreed"],
+  "action_items": [{
+    "owner": "Rohan",            <span class="c">// or "unassigned"</span>
+    "task": "Send Zoho field list",
+    "due_date": "2026-10-29",    <span class="c">// "by Thursday" resolved</span>
+    "confidence": 0.85,
+    "evidence": "I'll send over our Zoho field list…"
+  }],
+  "open_questions": ["…"]
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ STACK ═════════ -->
+  <section class="s" id="stack">
+    <div class="eyebrow">Stack &amp; cost</div>
+    <h2>Rent the hard parts, build the logic.</h2>
+    <p class="sub">Getting a bot into Zoom and Google Meet reliably is a solved infrastructure problem, so it's rented. The product logic (what to record, what to trust, what to send) is built.</p>
+    <table class="t">
+      <thead><tr><th>Layer</th><th>Choice</th><th>Why</th><th>Cost</th></tr></thead>
+      <tbody>
+        <tr><td>App &amp; API</td><td>Next.js 15 on Vercel</td><td>Pages and server routes in one codebase</td><td>Free tier</td></tr>
+        <tr><td>Sign-in</td><td>Google OAuth</td><td>One click gives identity + calendar access</td><td>Free</td></tr>
+        <tr><td>Bot &amp; transcript</td><td>Recall.ai</td><td>Meet, Zoom and Teams; calendar sync; speaker names</td><td>~$0.65 / hour</td></tr>
+        <tr><td>Summary</td><td>OpenAI GPT-5 mini</td><td>Cheap, follows a strict schema</td><td>~1–3¢ / meeting</td></tr>
+        <tr><td>Database</td><td>Supabase (Postgres)</td><td>Row-level security, atomic updates</td><td>Free tier</td></tr>
+        <tr><td>Email</td><td>Resend</td><td>Simple API, HTML emails</td><td>Free tier</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ═════════ RUN ═════════ -->
+  <section class="s" id="run">
+    <div class="eyebrow">Run it yourself</div>
+    <h2>Try it with zero accounts.</h2>
+    <p class="sub">The repo ships fake versions of Google, Recall, OpenAI, Resend and the database, so the full app runs locally without signing up for anything.</p>
+<pre class="code"><span class="c"># install</span>
+npm install
+
+<span class="c"># terminal 1: fake services</span>
+npm run mock
+
+<span class="c"># terminal 2: the app → http://localhost:3000</span>
+npm run dev:mock</pre>
+    <div class="callout"><b>Full setup</b>The repository README walks through every account (Google Cloud, Supabase, Recall, OpenAI, Resend), deployment to Vercel, and troubleshooting. 19 unit tests and a 32-check end-to-end test run against the fake services.</div>
+    <div class="btns" style="margin-top:20px">
+      <a class="btn" id="appLink2" href="#run" target="_blank" rel="noopener">Open the live app ↗</a>
+      <a class="btn out" id="repoLink2" href="#run" target="_blank" rel="noopener">View the code ↗</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Meeting Notetaker · built by Aradhita Tuli</span>
+    <a href="/" id="backLink2">← Back to portfolio</a>
+  </div>
+</footer>
+
+<script>
+/* ════════ EDIT THESE THREE LINKS ════════ */
+const APP_URL  = '';   // e.g. 'https://meeting-notetaker.vercel.app'  (leave '' until it's deployed)
+const REPO_URL = '';   // e.g. 'https://github.com/<you>/meeting-notetaker'
+const BACK_URL = '/';  // your portfolio home page
+/* ════════════════════════════════════════ */
+
+(function links() {
+  const set = (ids, url, fallbackText) => ids.forEach(id => {
+    const a = document.getElementById(id);
+    if (url) { a.href = url; } else { a.removeAttribute('target'); a.href = '#run'; if (fallbackText) a.textContent = fallbackText; }
+  });
+  set(['appLink', 'appLink2'], APP_URL, 'Live app: coming soon');
+  set(['repoLink', 'repoLink2'], REPO_URL, 'Code: coming soon');
+  document.getElementById('backLink').href = BACK_URL;
+  document.getElementById('backLink2').href = BACK_URL;
+  if (APP_URL) document.getElementById('fakeUrl').textContent = APP_URL.replace(/^https?:\/\//, '');
+})();
+
+/* ════════ demo data ════════ */
+const SUMMARY = {
+  summary: "Priya reported that Acme leadership supports the onboarding pilot but pushed back on the ₹4,50,000 annual quote against a ₹3 lakh yearly ceiling. Rohan raised Zoho CRM integration as a hard requirement and asked about data residency after a bad experience with Freshworks. Aradhita committed to a revised proposal, a Zoho feasibility answer and a security one-pager by Friday. Both sides agreed to target a pilot kick-off in the last week of November.",
+  key_points: ["Acme leadership supports the pilot; price is the main blocker", "Quote was ₹4,50,000/year against a ₹3 lakh budget", "Zoho CRM integration is a hard requirement", "Security team needs data-residency details (AWS Mumbai)"],
+  decisions: ["Target pilot kick-off in the last week of November", "Support-team involvement is parked for now"],
+  action_items: [
+    { owner: "Aradhita", task: "Send revised proposal closer to ₹3 lakh/year", due: "Fri", conf: .95, evidence: "I'll take a revised proposal to my side and send you something by Friday." },
+    { owner: "Aradhita", task: "Confirm whether Zoho integration via API is feasible", due: "Fri", conf: .9, evidence: "I'll check with our engineering team on the effort and come back to you with a yes or no." },
+    { owner: "Aradhita", task: "Include security one-pager in Friday email", due: "Fri", conf: .9, evidence: "I'll include the security one-pager in the Friday email so your security team has it." },
+    { owner: "Rohan", task: "Send Acme's Zoho field list for scoping", due: "Thu", conf: .85, evidence: "I'll send over our Zoho field list this week so your team can scope it. Probably Thursday." },
+    { owner: "unassigned", task: "Decide whether the support team joins the pilot", due: "—", conf: .3, evidence: "we should probably look into whether your support team wants to be part of the pilot too, but that can wait." },
+  ],
+  dropped: { owner: "Priya", task: "Sign the contract next week", evidence: "Priya agreed to sign the contract next week." },
+  open_questions: ["Is Zoho integration feasible within the pilot timeline?", "Will the revised price land near ₹3 lakh?"],
+};
+const SCRIPT = [
+  ["A", "Hi Priya, thanks for making time. Rohan, good to see you too."],
+  ["P", "We took it to leadership on Tuesday. The main pushback was price. The quote was 4,50,000 and our budget is closer to 3 lakh."],
+  ["A", "I'll take a revised proposal to my side and send you something by Friday."],
+  ["R", "We run everything through Zoho. If Zoho isn't supported, this is a non-starter."],
+  ["A", "I'll check with our engineering team on the effort and come back to you with a yes or no."],
+  ["R", "Our security team will want to know where the data sits. We had a bad experience with Freshworks."],
+  ["A", "I'll include the security one-pager in the Friday email so your security team has it."],
+  ["P", "We'd want to start the pilot before the end of November."],
+  ["R", "I'll send over our Zoho field list this week so your team can scope it. Probably Thursday."],
+  ["A", "We should probably look into whether your support team wants to be part of the pilot too, but that can wait."],
+  ["P", "That's right. If the price lands near 3 lakh I think we can move quickly."],
+];
+const NAMES = { A: "Aradhita", P: "Priya", R: "Rohan" };
+const LABEL = {
+  scheduled: ["Bot booked", "b-work"], skipped: ["Skipped", "b-muted"], joining: ["Bot joining", "b-work"],
+  waiting_room: ["Admit the bot", "b-wait"], recording: ["Recording", "b-live"], call_ended: ["Call ended", "b-work"],
+  transcribing: ["Transcribing", "b-work"], summarizing: ["Writing summary", "b-work"], done: ["Done", "b-done"],
+  removed: ["Bot removed", "b-muted"], nobot: ["No bot", "b-muted"],
+};
+
+/* ════════ state ════════ */
+let S, timers = [];
+function fresh() {
+  return {
+    auto: true, started: false, callOver: false, line: 0, sec: 0, transcript: [],
+    meetings: [
+      { id: "acme", title: "Acme – pilot follow-up", when: "Today, 3:00 pm", platform: "Google Meet", invited: 3, status: "scheduled", on: true },
+      { id: "design", title: "Design review", when: "Today, 5:30 pm", platform: "Google Meet", invited: 5, status: "scheduled", on: true },
+      { id: "weekly", title: "Weekly 1:1", when: "Tomorrow, 10:00 am", platform: "Zoom", invited: 2, status: "scheduled", on: true },
+    ],
+  };
+}
+const $ = id => document.getElementById(id);
+const acme = () => S.meetings.find(m => m.id === "acme");
+const later = (ms, fn) => { const t = setTimeout(fn, ms); timers.push(t); return t; };
+const clearTimers = () => { timers.forEach(clearTimeout); timers.forEach(clearInterval); timers = []; };
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+function log(msg) { const d = document.createElement("div"); d.textContent = msg; $("log").prepend(d); }
+
+/* ════════ render ════════ */
+function badge(st) { const [t, c] = LABEL[st]; return `<span class="badge ${c}">${t}</span>`; }
+function render() {
+  const up = S.meetings.filter(m => ["scheduled", "skipped"].includes(m.status));
+  const live = S.meetings.filter(m => ["joining", "waiting_room", "recording", "call_ended", "transcribing", "summarizing"].includes(m.status));
+  const past = S.meetings.filter(m => ["done", "removed", "nobot"].includes(m.status));
+  const booked = up.filter(m => m.status === "scheduled").length;
+
+  $("bookedNote").innerHTML = S.auto
+    ? `The bot is booked for <b>${booked}</b> upcoming meeting${booked === 1 ? "" : "s"}. When it asks to join, click <b>Admit</b>.`
+    : `Paused. No bot will join until you turn this on.`;
+  $("autoSwitch").classList.toggle("on", S.auto);
+  $("autoSwitch").setAttribute("aria-checked", S.auto);
+  $("autoText").textContent = S.auto ? "The bot joins every meeting with a video link." : "Paused for all meetings.";
+
+  $("upList").innerHTML = up.length ? up.map(m => `
+    <li class="row"><div class="m"><div class="ti">${esc(m.title)}</div>
+      <div class="small faint">${m.when} · ${m.platform} · ${m.invited} invited${m.status === "skipped" ? " · <i>bot off</i>" : ""}</div></div>
+      <button class="switch ${m.status === "scheduled" ? "on" : ""}" data-toggle="${m.id}" role="switch" aria-checked="${m.status === "scheduled"}"
+        aria-label="Bot for ${esc(m.title)}" ${S.auto ? "" : "disabled"}><span></span></button></li>`).join("")
+    : `<div class="empty">No upcoming meetings.</div>`;
+
+  $("liveCard").style.display = live.length ? "" : "none";
+  $("liveList").innerHTML = live.map(m => `<li class="row"><div class="m"><div class="ti">${esc(m.title)}</div><div class="small faint">${m.when} · ${m.platform}</div></div>${badge(m.status)}</li>`).join("");
+
+  $("pastList").innerHTML = past.length ? past.map(m => `
+    <li class="row"><button class="rowbtn" data-open="${m.id}" ${m.status === "done" ? "" : "disabled"}><div class="m"><div class="ti">${esc(m.title)}</div>
+      <div class="small faint">${m.when} · ${m.platform}${m.status === "done" ? " · 5 action items · emailed" : ""}</div></div>${badge(m.status)}</button></li>`).join("")
+    : `<div class="empty">Notes from your meetings will appear here.</div>`;
+
+  $("startBtn").disabled = S.started;
+}
+
+/* ════════ simulated call ════════ */
+function setBot(state) {
+  const t = $("t-B");
+  t.style.opacity = state === "absent" ? ".25" : "1";
+  t.classList.toggle("in", state === "in" || state === "recording");
+  t.classList.toggle("recording", state === "recording");
+}
+function speak(who) { ["A", "P", "R"].forEach(k => $("t-" + k).classList.toggle("speaking", k === who)); }
+
+function startCall() {
+  if (S.started) return;
+  S.started = true;
+  const m = acme();
+  $("endBtn").disabled = false;
+  log("Call started on Google Meet");
+  let t0 = Date.now();
+  timers.push(setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); $("clock").textContent = `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; }, 500));
+  runScript();
+  if (m.status !== "scheduled") {
+    m.status = "nobot"; render(); log("Bot is off for this meeting, so it won't join");
+    return;
+  }
+  m.status = "joining"; render(); log("Bot is opening the meeting link…");
+  later(1600, () => {
+    m.status = "waiting_room"; render(); setBot("waiting");
+    $("waiting").classList.add("show"); log("Bot is in the waiting room. Click Admit");
+  });
+}
+function admit() {
+  const m = acme();
+  if (m.status !== "waiting_room") return;
+  $("waiting").classList.remove("show");
+  m.status = "recording"; render(); setBot("recording");
+  $("kickBtn").disabled = false;
+  log("Admitted. Bot is recording");
+}
+function runScript() {
+  const step = () => {
+    if (S.callOver || S.line >= SCRIPT.length) { if (!S.callOver) endCall(); return; }
+    const [who, text] = SCRIPT[S.line++];
+    speak(who);
+    $("captions").innerHTML = `<b>${NAMES[who]}:</b> ${esc(text)}`;
+    if (acme().status === "recording") S.transcript.push([who, text, S.transcript.length * 14 + 4]);
+    later(2300, step);
+  };
+  later(600, step);
+}
+function kick() {
+  const m = acme();
+  if (m.status !== "recording") return;
+  m.status = "removed"; render(); setBot("absent");
+  $("kickBtn").disabled = true;
+  S.transcript = [];
+  log("You removed the bot. Recording deleted, no notes will be made");
+}
+function endCall() {
+  if (S.callOver) return;
+  S.callOver = true; speak(null);
+  $("captions").innerHTML = `<span class="faint">Call ended.</span>`;
+  $("endBtn").disabled = true; $("kickBtn").disabled = true; $("waiting").classList.remove("show");
+  timers.forEach(clearInterval);
+  log("Everyone left. Call ended");
+  const m = acme();
+  if (m.status === "waiting_room") { m.status = "nobot"; setBot("absent"); render(); log("Nobody admitted the bot, so there are no notes"); return; }
+  if (m.status !== "recording") { render(); return; }
+  setBot("absent");
+  const seq = [["call_ended", 900, "Bot left the call"], ["transcribing", 1300, "Transcript ready (speaker names + timestamps)"],
+    ["summarizing", 1800, "GPT-5 mini is writing the summary…"], ["done", 0, "Evidence check: 5 kept, 1 invented item dropped"]];
+  let delay = 0;
+  seq.forEach(([st, wait, msg]) => { later(delay, () => { m.status = st; render(); log(msg); if (st === "done") { log("Email sent to aradhita@example.com"); openNotes(); } }); delay += wait || 0; });
+}
+
+/* ════════ notes ════════ */
+function openNotes() {
+  const s = SUMMARY, tr = S.transcript.length ? S.transcript : SCRIPT.map(([w, t], i) => [w, t, i * 14 + 4]);
+  const fmt = sec => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(sec % 60).padStart(2, "0")}`;
+  $("notes").innerHTML = `
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+      <div style="display:flex;gap:10px;align-items:center"><h3 style="margin:0;font-size:20px;letter-spacing:-.02em">Acme – pilot follow-up</h3>${badge("done")}</div>
+      <button class="btn sm out" id="closeNotes">Close notes</button>
+    </div>
+    <div class="notes-grid" style="margin-top:12px">
+      <div>
+        <h4 style="margin-top:6px">Summary</h4><p style="margin:0">${esc(s.summary)}</p>
+        <h4>Action items</h4>
+        <table class="items"><thead><tr><th>Who</th><th>What</th><th>Due</th></tr></thead><tbody>
+        ${s.action_items.map(a => `<tr><td style="font-weight:600;white-space:nowrap">${a.owner === "unassigned" ? "Unassigned" : a.owner}</td>
+          <td>${esc(a.task)}<details><summary>Why? (${Math.round(a.conf * 100)}% sure)</summary><blockquote>“${esc(a.evidence)}”</blockquote></details></td>
+          <td class="faint">${a.due}</td></tr>`).join("")}
+        </tbody></table>
+        <div class="dropped">Removed by the evidence check: <s>${esc(s.dropped.task)}</s> (the AI quoted “${esc(s.dropped.evidence)}”, which nobody said).</div>
+        <h4>Decisions</h4><ul>${s.decisions.map(d => `<li>${esc(d)}</li>`).join("")}</ul>
+        <h4>Open questions</h4><ul>${s.open_questions.map(d => `<li>${esc(d)}</li>`).join("")}</ul>
+        <h4>Transcript</h4>
+        <div>${tr.map(([w, t, sec]) => `<div class="tline"><span class="ts">${fmt(sec)}</span><span><b>${NAMES[w]}</b> ${esc(t)}</span></div>`).join("")}</div>
+      </div>
+      <div>
+        <h4 style="margin-top:6px">The email you get</h4>
+        <div class="mail">
+          <div class="k">Meeting notes</div><h5>Acme – pilot follow-up</h5>
+          <div style="color:#333">${esc(s.summary.split(". ").slice(0, 2).join(". "))}.</div>
+          <table>${s.action_items.slice(0, 4).map(a => `<tr><td><b>${a.owner}</b></td><td>${esc(a.task)}</td><td style="color:#555">${a.due}</td></tr>`).join("")}</table>
+          <span class="cta">View full transcript</span>
+        </div>
+      </div>
+    </div>`;
+  $("notes").classList.add("show");
+  $("closeNotes").onclick = () => $("notes").classList.remove("show");
+}
+
+/* ════════ wiring ════════ */
+function reset() {
+  clearTimers(); S = fresh();
+  setBot("absent"); speak(null);
+  $("waiting").classList.remove("show"); $("notes").classList.remove("show");
+  $("captions").innerHTML = `<span class="faint">Captions appear here during the call.</span>`;
+  $("clock").textContent = "Not started"; $("log").innerHTML = "";
+  $("kickBtn").disabled = true; $("endBtn").disabled = true;
+  log("Calendar connected. 3 meetings booked");
+  render();
+}
+$("startBtn").onclick = startCall;
+$("admitBtn").onclick = admit;
+$("kickBtn").onclick = kick;
+$("endBtn").onclick = endCall;
+$("resetBtn").onclick = reset;
+$("autoSwitch").onclick = () => {
+  S.auto = !S.auto;
+  S.meetings.forEach(m => { if (["scheduled", "skipped"].includes(m.status)) m.status = S.auto ? "scheduled" : "skipped"; });
+  log(S.auto ? "Auto-join on. Bots re-booked" : "Auto-join off. All upcoming bots unbooked");
+  render();
+};
+document.addEventListener("click", e => {
+  const tg = e.target.closest("[data-toggle]");
+  if (tg) {
+    const m = S.meetings.find(x => x.id === tg.dataset.toggle);
+    m.status = m.status === "scheduled" ? "skipped" : "scheduled";
+    log(`${m.title}: bot ${m.status === "scheduled" ? "booked" : "turned off"}`);
+    render();
+  }
+  const op = e.target.closest("[data-open]");
+  if (op && op.dataset.open === "acme" && acme().status === "done") openNotes();
+});
+reset();
+</script>
+</body>
+</html>
